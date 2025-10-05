@@ -20,7 +20,7 @@ export interface DomainEventPrimitives {
  *
  * @template TPayload - shape of the event-specific payload
  */
-export abstract class DomainEvent<TPayload extends Record<string, unknown> = Record<string, unknown>> {
+export abstract class DomainEvent<TPayload extends object = object> {
   public readonly aggregateId: Uuid; // ID of the aggregate the event relates to
   public readonly eventId: Uuid;     // Unique identifier for the event instance
   public readonly occurredOn: Date;  // Timestamp when the event was created
