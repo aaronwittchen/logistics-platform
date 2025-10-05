@@ -9,9 +9,29 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: logistics-ddd-platform
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: logistics_test
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U app -d logistics_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_TYPE: postgres
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: app
+      DB_PASSWORD: app
+      DB_NAME: logistics_test
+      DB_LOGGING: "false"
 
     steps:
       - name: Checkout repository
@@ -22,10 +42,20 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Postgres client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Wait for Postgres to be ready
+        run: until pg_isready -h localhost -p 5432 -U app -d logistics_test; do sleep 1; done
+
       - name: Install dependencies
+        working-directory: logistics-ddd-platform
         run: bun install --frozen-lockfile
 
+      # - name: Run migrations
+      #   working-directory: logistics-ddd-platform
+      #   run: bun run typeorm migration:run
+
       - name: Run tests
+        working-directory: logistics-ddd-platform
         run: bun test
-
-
