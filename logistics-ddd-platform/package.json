@@ -6,9 +6,12 @@
   "scripts": {
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "test:coverage": "bun test --coverage"
+    "test:coverage": "bun test --coverage",
+    "dev": "bun --watch src/apps/inventory/backend/start.ts",
+    "start": "bun src/apps/inventory/backend/start.ts"
   },
   "devDependencies": {
+    "@types/amqplib": "0.10.6",
     "@types/bun": "latest",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
@@ -27,7 +30,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "amqplib": "^0.10.9",
     "express": "^5.1.0",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.17",
     "uuid": "^13.0.0"
   }
 }

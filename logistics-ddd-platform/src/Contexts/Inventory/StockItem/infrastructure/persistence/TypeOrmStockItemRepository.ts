@@ -1,63 +1,50 @@
-import { Repository, DataSource } from "typeorm";
-import type { StockItemRepository } from "../../domain/StockItemRepository";
-import { StockItem } from "../../domain/StockItem";
-import { StockItemId } from "../../domain/StockItemId";
-import { StockItemEntity } from "./StockItemEntity";
+import { DataSource, Repository } from 'typeorm';
+import { StockItem } from '../../domain/StockItem';
+import { StockItemId } from '../../domain/StockItemId';
+import { StockItemName } from '../../domain/StockItemName';
+import { Quantity } from '../../domain/Quantity';
+import { StockItemRepository } from '../../domain/StockItemRepository';
+import { StockItemEntity } from './StockItemEntity';
+import { EventBus } from '@/Shared/domain/EventBus';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
 
-/**
- * TypeORM implementation of the StockItemRepository.
- *
- * Responsibilities:
- * - Persist StockItem aggregates to the database
- * - Retrieve StockItem aggregates from the database
- * - Delete StockItem aggregates
- * - Convert between domain aggregates and TypeORM entities
- */
 export class TypeOrmStockItemRepository implements StockItemRepository {
-  constructor(private readonly repo: Repository<StockItemEntity>) {}
+  private repository: Repository<StockItemEntity>;
 
-  /**
-   * Factory method to create the repository from a TypeORM DataSource.
-   *
-   * @param dataSource - TypeORM DataSource instance
-   * @returns a new TypeOrmStockItemRepository
-   */
-  static fromDataSource(dataSource: DataSource): TypeOrmStockItemRepository {
-    return new TypeOrmStockItemRepository(dataSource.getRepository(StockItemEntity));
+  constructor(private readonly eventBus?: EventBus) {
+    this.repository = AppDataSource.getRepository(StockItemEntity);
   }
 
-  /**
-   * Saves a StockItem aggregate to the database.
-   *
-   * @param stockItem - the StockItem aggregate to persist
-   */
   async save(stockItem: StockItem): Promise<void> {
-    const entity = StockItemEntity.fromDomain(stockItem);
-    await this.repo.save(entity);
+    const primitives = stockItem.toPrimitives();
+    const entity = this.repository.create(primitives);
+
+    await this.repository.save(entity);
+
+    // Publish domain events
+    if (this.eventBus) {
+      const events = stockItem.pullDomainEvents();
+      await this.eventBus.publish(events);
+    }
   }
 
-  /**
-   * Finds a StockItem by its ID.
-   *
-   * @param id - the StockItemId to search for
-   * @returns the StockItem aggregate or null if not found
-   */
   async find(id: StockItemId): Promise<StockItem | null> {
-    const entity = await this.repo.findOne({ where: { id: id.value } });
-    if (!entity) return null;
+    const entity = await this.repository.findOne({
+      where: { id: id.toString() },
+    });
 
-    const domain = entity.toDomain();
-    // Clear any domain events emitted during rehydration from the DB
-    domain.pullDomainEvents();
-    return domain;
+    if (!entity) {
+      return null;
+    }
+
+    return StockItem.add({
+      id: new StockItemId(entity.id),
+      name: new StockItemName(entity.name),
+      quantity: new Quantity(entity.quantity)
+    });
   }
 
-  /**
-   * Deletes a StockItem from the database.
-   *
-   * @param id - the StockItemId of the aggregate to delete
-   */
   async delete(id: StockItemId): Promise<void> {
-    await this.repo.delete({ id: id.value });
+    await this.repository.delete(id.toString());
   }
 }

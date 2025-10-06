@@ -1,4 +1,5 @@
 import type { DataSourceOptions } from "typeorm";
+import { DataSource } from "typeorm";
 
 /**
  * Supported database drivers for TypeORM
@@ -21,9 +22,13 @@ function env(name: string, fallback?: string): string | undefined {
 export function getTypeOrmConfig(): DataSourceOptions {
   const type = (env("DB_TYPE", "postgres") as SupportedDriver) as DataSourceOptions["type"];
 
+  // Check for test environment more explicitly
+  const isTest = env("NODE_ENV") === "test" || env("TEST_DB") === "true" || process.env.NODE_ENV === "test";
+  const isDevelopment = env("NODE_ENV") === "development" || (!env("NODE_ENV") && process.env.NODE_ENV !== "production");
+
   const common: Partial<DataSourceOptions> = {
     type,
-    synchronize: false, // avoid auto-sync in production
+    synchronize: isTest || isDevelopment, // Enable sync for tests and development, disable for production
     logging: env("DB_LOGGING", "false") === "true",
     entities: [
       // Convention: TypeORM entities under infrastructure/persistence/typeorm
@@ -41,14 +46,20 @@ export function getTypeOrmConfig(): DataSourceOptions {
     case "mysql":
     case "mariadb":
     case "mssql": {
+      const host = env("DB_HOST", "localhost");
+      const port = Number(env("DB_PORT", type === "postgres" ? "5432" : type === "mysql" || type === "mariadb" ? "3306" : type === "mssql" ? "1433" : "0"));
+      const username = env("DB_USERNAME", "app")!;
+      const password = env("DB_PASSWORD", "app")!;
+      const database = env("DB_NAME", "app")!;
+      
       return {
         ...common,
         type,
-        host: env("DB_HOST", "localhost"),
-        port: Number(env("DB_PORT", type === "postgres" ? "5432" : type === "mysql" || type === "mariadb" ? "3306" : type === "mssql" ? "1433" : "0")),
-        username: env("DB_USERNAME", "app"),
-        password: env("DB_PASSWORD", "app"),
-        database: env("DB_NAME", "app"),
+        host,
+        port,
+        username,
+        password,
+        database,
       } as DataSourceOptions;
     }
     case "sqlite": {
@@ -63,6 +74,8 @@ export function getTypeOrmConfig(): DataSourceOptions {
   }
 }
 
+// Create and export a single AppDataSource instance
+export const AppDataSource = new DataSource(getTypeOrmConfig());
+
 // Convenience default export
-const config: DataSourceOptions = getTypeOrmConfig();
-export default config;
+export { getTypeOrmConfig as default };

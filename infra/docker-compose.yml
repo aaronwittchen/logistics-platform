@@ -1,9 +1,86 @@
 services:
+  backend:
+    build:
+      context: ../logistics-ddd-platform
+      dockerfile: Dockerfile
+    command: bun --watch src/apps/inventory/backend/start.ts
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: logistics_user
+      DB_PASSWORD: logistics_pass
+      DB_NAME: logistics
+      DB_TYPE: postgres
+      DB_SSL: "false"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: logistics_user
+      RABBITMQ_PASS: logistics_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend-network
+    ports:
+      - "3000:3000" # optional, if your backend exposes HTTP
+
   postgres:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: logistics
       POSTGRES_USER: logistics_user
       POSTGRES_PASSWORD: logistics_pass
+    networks:
+      - backend-network
     ports:
       - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logistics_user -d logistics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: logistics_user
+      RABBITMQ_DEFAULT_PASS: logistics_pass
+    networks:
+      - backend-network
+    ports:
+      - '5672:5672'   # AMQP
+      - '15672:15672' # Management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  test:
+    build:
+      context: ../logistics-ddd-platform
+      dockerfile: Dockerfile
+    command: bun test
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: logistics_user
+      DB_PASSWORD: logistics_pass
+      DB_NAME: logistics
+      DB_TYPE: postgres
+      NODE_ENV: test
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: logistics_user
+      RABBITMQ_PASS: logistics_pass
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge

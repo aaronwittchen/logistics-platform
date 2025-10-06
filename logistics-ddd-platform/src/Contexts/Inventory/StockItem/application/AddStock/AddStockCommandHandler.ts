@@ -20,7 +20,7 @@ import { Quantity } from "../../domain/Quantity";
 export class AddStockCommandHandler {
   constructor(
     private readonly repository: StockItemRepository,
-    private readonly eventBus: EventBus
+    private readonly eventBus?: EventBus
   ) {}
 
   /**
@@ -41,6 +41,11 @@ export class AddStockCommandHandler {
     await this.repository.save(item);
 
     // Publish any domain events emitted during aggregate creation
-    await this.eventBus.publish(item.pullDomainEvents());
+    if (this.eventBus) {
+      const events = item.pullDomainEvents();
+      if (events.length > 0) {
+        await this.eventBus.publish(events);
+      }
+    }
   }
 }

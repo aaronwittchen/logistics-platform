@@ -528,3 +528,8 @@ This is a complex architecture! Don't hesitate to:
 **Remember**: The goal is LEARNING, not perfection. Build incrementally, understand each pattern, then move forward.
 
 Happy coding! 🚀
+
+
+docker-compose run --rm test  
+create the db 
+
