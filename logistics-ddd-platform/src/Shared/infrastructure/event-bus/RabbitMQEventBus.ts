@@ -1,6 +1,7 @@
 import { EventBus, DomainEventClass, DomainEventHandler } from '../../domain/EventBus';
 import { DomainEvent } from '../../domain/DomainEvent';
 import { RabbitMQConnection } from './RabbitMQConnection';
+import { log } from '@/utils/log';
 
 export class RabbitMQEventBus implements EventBus {
     private readonly subscriptions = new Map<string, Set<DomainEventHandler<any>>>();
@@ -28,7 +29,7 @@ export class RabbitMQEventBus implements EventBus {
     // Bind queue to exchange with wildcard pattern to receive all events
     await channel.bindQueue(queueName, this.exchangeName, '#');
 
-    console.log(`✅ EventBus started on exchange: ${this.exchangeName} with queue: ${queueName}`);
+    log.ok(`EventBus started on exchange: ${this.exchangeName} with queue: ${queueName}`);
   }
 
   async publish(events: DomainEvent[]): Promise<void> {
@@ -38,9 +39,9 @@ export class RabbitMQEventBus implements EventBus {
       const routingKey = event.eventName();
       const message = JSON.stringify({
         data: {
-          id: event.eventId,
+          id: event.eventId.value,
           type: event.eventName(),
-          aggregateId: event.aggregateId,
+          aggregateId: event.aggregateId.value,
           occurredOn: event.occurredOn.toISOString(),
           attributes: event.toPrimitives(),
         },
@@ -50,7 +51,7 @@ export class RabbitMQEventBus implements EventBus {
         persistent: true,
       });
 
-      console.log(`📤 Published event: ${event.eventName}`);
+      log.info(`Published event: ${event.eventName}`);
     }
   }
 
@@ -66,7 +67,7 @@ export class RabbitMQEventBus implements EventBus {
 
     this.subscriptions.get(eventName)!.add(handler);
 
-    console.log(`✅ Subscribed to event: ${eventName}`);
+    log.ok(`Subscribed to event: ${eventName}`);
   }
 
   unsubscribe<T extends DomainEvent>(
@@ -83,6 +84,6 @@ export class RabbitMQEventBus implements EventBus {
       }
     }
 
-    console.log(`❌ Unsubscribed from event: ${eventName}`);
+    log.info(`Unsubscribed from event: ${eventName}`);
   }
 }

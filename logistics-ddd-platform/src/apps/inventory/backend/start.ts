@@ -1,17 +1,14 @@
 import { InventoryBackendApp } from "./InventoryBackendApp";
+import { log } from "@/utils/log";
 
 const app = new InventoryBackendApp();
 
 app
   .start()
   .then(() => {
-    // eslint-disable-next-line no-console
-    console.log("Inventory backend started");
+    log.ok("Inventory backend started");
   })
   .catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error("Failed to start inventory backend", err);
+    log.err(`Failed to start inventory backend: ${err}`);
     process.exit(1);
   });
-
-

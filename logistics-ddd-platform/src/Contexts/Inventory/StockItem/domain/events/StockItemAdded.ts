@@ -33,8 +33,8 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
    */
   constructor(
     params: { aggregateId: StockItemId; eventId?: Uuid; occurredOn?: Date },
-    private readonly name: StockItemName,
-    private readonly quantity: Quantity
+    private readonly stockItemName: StockItemName,
+    private readonly stockQuantity: Quantity
   ) {
     super(params); // call base DomainEvent constructor
   }
@@ -44,11 +44,21 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
     return "inventory.stock_item.added";
   }
 
+  /** Returns the stock item name */
+  get name(): string {
+    return this.stockItemName.value;
+  }
+
+  /** Returns the stock item quantity */
+  get quantity(): number {
+    return this.stockQuantity.value;
+  }
+
   /** Returns the payload to be serialized when the event is published */
   protected toPayload(): StockItemAddedPayload {
     return {
-      name: this.name.value,
-      quantity: this.quantity.value,
+      name: this.stockItemName.value,
+      quantity: this.stockQuantity.value,
     };
   }
 }

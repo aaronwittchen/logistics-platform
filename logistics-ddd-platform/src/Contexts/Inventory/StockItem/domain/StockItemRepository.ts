@@ -29,6 +29,13 @@ export interface StockItemRepository {
   find(id: StockItemId): Promise<StockItem | null>;
 
   /**
+   * Find all StockItem aggregates.
+   * 
+   * @returns array of all StockItem aggregates
+   */
+  findAll(): Promise<StockItem[]>;
+
+  /**
    * Delete a StockItem aggregate by its ID.
    * 
    * @param id - the StockItemId of the aggregate to delete

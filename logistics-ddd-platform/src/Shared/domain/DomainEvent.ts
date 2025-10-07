@@ -40,6 +40,28 @@ export abstract class DomainEvent<TPayload extends object = object> {
     this.aggregateId = params.aggregateId;
     this.eventId = params.eventId ?? Uuid.random();   // generate new ID if not provided
     this.occurredOn = params.occurredOn ?? new Date(); // default to now if not provided
+    
+    // Make properties truly immutable at runtime
+    Object.defineProperty(this, 'aggregateId', {
+      value: this.aggregateId,
+      writable: false,
+      configurable: false,
+      enumerable: true
+    });
+    
+    Object.defineProperty(this, 'eventId', {
+      value: this.eventId,
+      writable: false,
+      configurable: false,
+      enumerable: true
+    });
+    
+    Object.defineProperty(this, 'occurredOn', {
+      value: this.occurredOn,
+      writable: false,
+      configurable: false,
+      enumerable: true
+    });
   }
 
   /**
@@ -48,6 +70,24 @@ export abstract class DomainEvent<TPayload extends object = object> {
    * Used for identification, messaging, and event sourcing.
    */
   public abstract eventName(): string;
+
+  /**
+   * Compare two domain events for equality.
+   *
+   * Events are considered equal if they have the same aggregateId, eventName, and payload.
+   */
+  public equals(other: DomainEvent): boolean {
+    if (!other) return false;
+    if (!this.aggregateId.equals(other.aggregateId) || this.eventName() !== other.eventName()) {
+      return false;
+    }
+
+    // Compare payloads using JSON serialization for deep equality
+    const thisPayload = this.toPayload();
+    const otherPayload = other.toPayload();
+
+    return JSON.stringify(thisPayload) === JSON.stringify(otherPayload);
+  }
 
   /**
    * Every concrete event must provide its specific payload.

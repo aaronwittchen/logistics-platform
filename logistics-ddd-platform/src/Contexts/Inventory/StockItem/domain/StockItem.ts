@@ -3,6 +3,8 @@ import { StockItemId } from "./StockItemId";
 import { StockItemName } from "./StockItemName";
 import { Quantity } from "./Quantity";
 import { StockItemAdded } from "./events/StockItemAdded";
+import { StockItemReserved } from "./events/StockItemReserved";
+import { Uuid } from "@/Shared/domain/Uuid";
 
 /**
  * Interface representing the primitive (serializable) shape of a StockItem.
@@ -21,7 +23,8 @@ export interface StockItemPrimitives {
  * Responsibilities:
  * - Encapsulate StockItem state (id, name, quantity)
  * - Ensure invariants and consistency via AggregateRoot
- * - Emit domain events on important changes (e.g., addition)
+ * - Emit domain events on important changes (e.g., addition, reservation)
+ * - Support inventory operations like reserving stock
  */
 export class StockItem extends AggregateRoot {
   /**
@@ -43,6 +46,30 @@ export class StockItem extends AggregateRoot {
     // Record a domain event for the addition of the stock item
     item.record(new StockItemAdded({ aggregateId: params.id }, params.name, params.quantity));
     return item;
+  }
+
+  /**
+   * Reserve stock from this item
+   *
+   * @param quantity - the quantity to reserve
+   * @param reservationId - unique identifier for this reservation
+   * @throws Error if insufficient stock is available
+   */
+  reserve(quantity: Quantity, reservationId: string): void {
+    if (!this._quantity.isGreaterThanOrEqual(quantity)) {
+      throw new Error('Insufficient stock');
+    }
+
+    this._quantity = this._quantity.subtract(quantity);
+
+    this.record(
+      new StockItemReserved(
+        { aggregateId: this._id },
+        this._id,
+        quantity,
+        reservationId
+      )
+    );
   }
 
   /** Getter for the StockItem ID */

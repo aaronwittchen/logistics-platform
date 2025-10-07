@@ -66,11 +66,11 @@ function deepFreeze<T>(value: T): T {
           Object.values(value as Record<string, unknown>)
         );
 
-    iterate((child: unknown) => {
-      if (child && (typeof child === "object" || typeof child === "function") && !Object.isFrozen(child)) {
-        deepFreeze(child);
-      }
-    });
+        iterate((child: unknown) => {
+          if (child && (typeof child === "object" || typeof child === "function") && !Object.isFrozen(child)) {
+            deepFreeze(child);
+          }
+        });
 
     // Then freeze the parent itself
     Object.freeze(value);

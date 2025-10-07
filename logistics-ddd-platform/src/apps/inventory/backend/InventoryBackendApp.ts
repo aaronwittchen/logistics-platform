@@ -4,6 +4,7 @@ import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOr
 import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
 import { createStockItemsRouter } from './routes/stock-items.route';
 import { RabbitMQEventBus } from '../../../Shared/infrastructure/event-bus/RabbitMQEventBus';
+import { log } from '../../../utils/log';
 
 /**
  * Utility to read environment variables with an optional fallback
@@ -30,39 +31,39 @@ export class InventoryBackendApp {
       });
 
       this.eventBus = new RabbitMQEventBus(rabbitConnection);
-      console.log('✅ EventBus initialized successfully');
+      log.ok('EventBus initialized successfully');
     } catch (error: unknown) {
-      console.warn('⚠️ EventBus initialization failed:', error instanceof Error ? error.message : String(error));
-      console.warn('📝 Continuing without event publishing capability');
+      log.warn(`EventBus initialization failed: ${error instanceof Error ? error.message : String(error)}`);
+      log.info('Continuing without event publishing capability');
       this.eventBus = undefined;
     }
   }
 
   async start(): Promise<void> {
     try {
-      console.log('🔄 Connecting to database...');
+      log.load('Connecting to database...');
       await this.connectDatabase();
       
-      console.log('🔄 Registering routes...');
+      log.load('Registering routes...');
       this.registerRoutes();
       
       if (this.eventBus) {
-        console.log('🔄 Starting EventBus...');
+        log.load('Starting EventBus...');
         try {
           await this.eventBus.start();
-          console.log('✅ EventBus connected');
+          log.ok('EventBus connected');
         } catch (error: unknown) {
-          console.warn('⚠️ EventBus connection failed:', error instanceof Error ? error.message : String(error));
+          log.warn(`EventBus connection failed: ${error instanceof Error ? error.message : String(error)}`);
           this.eventBus = undefined; // Disable EventBus if connection fails
         }
       }
       
-      console.log('🔄 Starting HTTP server...');
+      log.load('Starting HTTP server...');
       await this.server.start();
       
-      console.log('✅ Inventory backend started successfully');
+      log.ok('Inventory backend started successfully');
     } catch (error) {
-      console.error('❌ Failed to start inventory backend:', error);
+      log.err(`Failed to start inventory backend: ${error}`);
       throw error;
     }
   }
@@ -70,9 +71,9 @@ export class InventoryBackendApp {
   private async connectDatabase(): Promise<void> {
     try {
       await AppDataSource.initialize();
-      console.log('✅ Database connected');
+      log.ok('Database connected');
     } catch (error) {
-      console.error('❌ Database connection failed:', error);
+      log.err(`Database connection failed: ${error}`);
       throw error;
     }
   }
@@ -81,12 +82,10 @@ export class InventoryBackendApp {
     try {
       const stockItemsRouter = createStockItemsRouter(this.eventBus);
       this.server.registerRouter(stockItemsRouter);
-      console.log('✅ Routes registered');
+      log.ok('Routes registered');
     } catch (error) {
-      console.error('❌ Route registration failed:', error);
+      log.err(`Route registration failed: ${error}`);
       throw error;
     }
   }
 }
-
-

@@ -41,11 +41,17 @@ export class AddStockCommandHandler {
     await this.repository.save(item);
 
     // Publish any domain events emitted during aggregate creation
-    if (this.eventBus) {
-      const events = item.pullDomainEvents();
-      if (events.length > 0) {
-        await this.eventBus.publish(events);
-      }
-    }
+        // Publish any domain events emitted during aggregate creation
+        if (this.eventBus) {
+          const events = item.pullDomainEvents();
+          if (events.length > 0) {
+            try {
+              await this.eventBus.publish(events);
+            } catch (error) {
+              // Log the error but don't fail the operation
+              console.error('Failed to publish domain events:', error);
+            }
+          }
+        }
   }
 }

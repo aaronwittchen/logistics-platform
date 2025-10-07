@@ -1,5 +1,7 @@
 import type { DataSourceOptions } from "typeorm";
 import { DataSource } from "typeorm";
+import { StockItemEntity } from '../../../Contexts/Inventory/StockItem/infrastructure/persistence/StockItemEntity';
+import { PackageEntity } from '../../../Contexts/Logistics/Package/infrastructure/persistence/PackageEntity';
 
 /**
  * Supported database drivers for TypeORM
@@ -31,6 +33,8 @@ export function getTypeOrmConfig(): DataSourceOptions {
     synchronize: isTest || isDevelopment, // Enable sync for tests and development, disable for production
     logging: env("DB_LOGGING", "false") === "true",
     entities: [
+      StockItemEntity,
+      PackageEntity,
       // Convention: TypeORM entities under infrastructure/persistence/typeorm
       "src/**/infrastructure/persistence/typeorm/**/*.{ts,js}",
       // Fallback: any file ending with Entity

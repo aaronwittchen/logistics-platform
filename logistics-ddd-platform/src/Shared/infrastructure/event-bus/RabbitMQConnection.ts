@@ -1,4 +1,5 @@
 import amqp, { Channel, Connection } from 'amqplib';
+import { log } from '@/utils/log';
 
 export class RabbitMQConnection {
   private connection?: Connection;
@@ -25,13 +26,13 @@ export class RabbitMQConnection {
 
     this.channel = await this.connection.createChannel();
 
-    console.log('✅ RabbitMQ connected');
+    log.ok('RabbitMQ connected');
   }
 
   async close(): Promise<void> {
     await this.channel?.close();
     await this.connection?.close();
-    console.log('❌ RabbitMQ connection closed');
+    log.info('RabbitMQ connection closed');
   }
 
   getChannel(): Channel {

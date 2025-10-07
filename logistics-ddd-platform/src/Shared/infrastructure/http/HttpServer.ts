@@ -1,5 +1,7 @@
 import express, { type Express, type Request, type Response, type NextFunction, type Router } from "express";
 import type { Server } from "http";
+import { swaggerUi, specs } from "../swagger";
+import { log } from "@/utils/log";
 
 export type HttpMethod = "get" | "post" | "put" | "patch" | "delete";
 
@@ -20,6 +22,10 @@ export class HttpServer {
     this.app = express();
     this.app.use(express.json());
     this.port = port;
+
+    // Add Swagger middleware
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+    log.info(`Swagger docs available at: http://localhost:${this.port}/api-docs`);
   }
 
   public async start(): Promise<void> {
@@ -65,5 +71,3 @@ export class HttpServer {
     return this.app;
   }
 }
-
-
