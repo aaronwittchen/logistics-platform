@@ -3,6 +3,7 @@ services:
     build:
       context: ../logistics-ddd-platform
       dockerfile: Dockerfile
+      target: development
     command: bun --watch src/apps/inventory/backend/start.ts
     environment:
       DB_HOST: postgres
@@ -31,6 +32,7 @@ services:
     build:
       context: ../logistics-ddd-platform
       dockerfile: Dockerfile
+      target: development
     command: bun --watch src/apps/backoffice/backend/start.ts
     environment:
       DB_HOST: postgres
@@ -62,6 +64,7 @@ services:
     build:
       context: ../logistics-ddd-platform
       dockerfile: Dockerfile
+      target: development
     command: bun --watch src/apps/health-check/start.ts
     environment:
       DB_HOST: postgres

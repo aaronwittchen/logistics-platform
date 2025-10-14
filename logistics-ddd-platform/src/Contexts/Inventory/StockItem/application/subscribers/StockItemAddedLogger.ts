@@ -12,7 +12,12 @@ export class StockItemAddedLogger
   subscribedTo() {
     return [{
       EVENT_NAME: 'inventory.stock_item.added',
-      fromPrimitives: (data: any) => {
+      fromPrimitives: (data: {
+        aggregateId: string | { value: string };
+        id: string | { value: string };
+        occurredOn: string;
+        attributes: { name: string; quantity: number };
+      }) => {
         const { aggregateId, id: eventId, occurredOn, attributes } = data;
         const { name, quantity } = attributes;
 

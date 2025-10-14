@@ -191,6 +191,7 @@ describe('StockItemAdded', () => {
         eventId: '660e8400-e29b-41d4-a716-446655440000',
         occurredOn: '2023-01-01T12:00:00.000Z',
         eventName: 'inventory.stock_item.added',
+        eventVersion: '1.0.0',
         name: 'iPhone 15',
         quantity: 10,
       } satisfies DomainEventPrimitives);
@@ -511,6 +512,57 @@ describe('StockItemAdded', () => {
       const primitives = event.toPrimitives();
       expect(primitives.quantity).toBe(0);
       expect(primitives.name).toBe('Zero Stock Item');
+    });
+  });
+
+  describe('event deserialization', () => {
+    it('should deserialize from primitives correctly', () => {
+      const primitives = {
+        aggregateId: '550e8400-e29b-41d4-a716-446655440000',
+        eventId: '660e8400-e29b-41d4-a716-446655440000',
+        occurredOn: '2023-01-01T12:00:00.000Z',
+        eventName: 'inventory.stock_item.added',
+        eventVersion: '1.0.0',
+        name: 'iPhone 15',
+        quantity: 100,
+      };
+
+      const event = StockItemAdded.fromPrimitives(primitives);
+
+      expect(event.aggregateId.value).toBe('550e8400-e29b-41d4-a716-446655440000');
+      expect(event.eventId.value).toBe('660e8400-e29b-41d4-a716-446655440000');
+      expect(event.occurredOn).toEqual(new Date('2023-01-01T12:00:00.000Z'));
+      expect(event.name).toBe('iPhone 15');
+      expect(event.quantity).toBe(100);
+    });
+
+    it('should validate primitives before deserialization', () => {
+      const invalidPrimitives = {
+        aggregateId: '550e8400-e29b-41d4-a716-446655440000',
+        eventId: '660e8400-e29b-41d4-a716-446655440000',
+        occurredOn: '2023-01-01T12:00:00.000Z',
+        eventName: 'inventory.stock_item.added',
+        eventVersion: '1.0.0',
+        // Missing required fields
+      };
+
+      expect(() => StockItemAdded.fromPrimitives(invalidPrimitives))
+        .toThrow('Missing name in event attributes');
+    });
+
+    it('should handle event version in serialization', () => {
+      const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
+      const event = new StockItemAdded(
+        { aggregateId },
+        StockItemName.from('iPhone 15'),
+        Quantity.from(100)
+      );
+
+      const primitives = event.toPrimitives();
+
+      expect(primitives.eventVersion).toBe('1.0.0');
+      expect(primitives.name).toBe('iPhone 15');
+      expect(primitives.quantity).toBe(100);
     });
   });
 });

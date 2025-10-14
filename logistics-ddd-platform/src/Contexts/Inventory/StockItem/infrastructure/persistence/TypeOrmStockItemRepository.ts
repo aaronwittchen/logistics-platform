@@ -12,8 +12,13 @@ import { log } from '@/utils/log';
 export class TypeOrmStockItemRepository implements StockItemRepository {
   private repository: Repository<StockItemEntity>;
 
-  constructor(private readonly eventBus?: EventBus) {
-    this.repository = AppDataSource.getRepository(StockItemEntity);
+  constructor(
+    private readonly eventBus?: EventBus,
+    dataSource?: DataSource
+  ) {
+    // Use the provided DataSource for testing, otherwise use AppDataSource
+    const ds = dataSource || AppDataSource;
+    this.repository = ds.getRepository(StockItemEntity);
   }
 
   async save(stockItem: StockItem): Promise<void> {

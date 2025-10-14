@@ -1,20 +1,56 @@
-# Use official Bun image
-FROM oven/bun:latest
+# Build stage
+FROM oven/bun:alpine AS builder
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy package files first for caching
 COPY package.json bun.lock ./
+COPY tsconfig.json ./
 
-# Install dependencies
 RUN bun install
 
-# Copy the rest of your app code
-COPY . .
+COPY src ./src
 
-# Expose port if your backend has an HTTP server
-EXPOSE 3000
+RUN bun run build
 
-# Default command to run your backend
-CMD ["bun", "run", "dev"]
+# Development stage (for running TypeScript directly)
+FROM oven/bun:alpine AS development
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock ./
+COPY tsconfig.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN bun install
+
+# Copy source code
+COPY src ./src
+
+# Set development environment
+ENV NODE_ENV=development
+
+# Default command for development (can be overridden in docker-compose)
+CMD ["bun", "--watch", "src/apps/inventory/backend/start.ts"]
+
+# Production stage - much smaller
+FROM oven/bun:alpine AS production
+
+WORKDIR /app
+
+# Create app directory and set proper ownership before switching user
+RUN mkdir -p /app && chown -R bun:bun /app
+
+COPY package.json bun.lock ./
+
+RUN bun install --production
+
+COPY --from=builder /app/dist ./dist
+
+ENV NODE_ENV=production
+
+# Switch to non-root user
+USER bun
+
+# This will be overridden by k8s
+CMD ["bun", "dist/apps/inventory/backend/start.js"]

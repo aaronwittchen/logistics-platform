@@ -4,7 +4,8 @@ import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOr
 import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
 import { createStockItemsRouter } from './routes/stock-items.route';
 import { RabbitMQEventBus } from '../../../Shared/infrastructure/event-bus/RabbitMQEventBus';
-import { log } from '../../../utils/log';
+import { log } from '@/utils/log';
+import { createHealthRouter } from "../routes/health.route";
 
 /**
  * Utility to read environment variables with an optional fallback
@@ -82,6 +83,10 @@ export class InventoryBackendApp {
     try {
       const stockItemsRouter = createStockItemsRouter(this.eventBus);
       this.server.registerRouter(stockItemsRouter);
+      
+      const healthRouter = createHealthRouter();
+      this.server.registerRouter(healthRouter);
+      
       log.ok('Routes registered');
     } catch (error) {
       log.err(`Route registration failed: ${error}`);

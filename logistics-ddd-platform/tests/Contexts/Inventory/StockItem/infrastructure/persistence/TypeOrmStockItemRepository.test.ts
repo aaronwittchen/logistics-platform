@@ -1,13 +1,15 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { TypeOrmStockItemRepository } from '@/Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
 import { StockItem } from '@/Contexts/Inventory/StockItem/domain/StockItem';
 import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
 import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
 import { Quantity } from '@/Contexts/Inventory/StockItem/domain/Quantity';
 import { StockItemEntity } from '@/Contexts/Inventory/StockItem/infrastructure/persistence/StockItemEntity';
+import { PackageEntity } from '@/Contexts/Logistics/Package/infrastructure/persistence/PackageEntity';
 import { EventBus } from '@/Shared/domain/EventBus';
 import { DomainEvent } from '@/Shared/domain/DomainEvent';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
 
 // Mock EventBus for testing
 class MockEventBus implements EventBus {
@@ -36,20 +38,31 @@ describe('TypeOrmStockItemRepository Integration', () => {
   let eventBus: MockEventBus;
 
   beforeAll(async () => {
-    // Set up test database configuration
+    // Set up test database configuration BEFORE importing TypeORM config
     process.env.NODE_ENV = 'test';
     process.env.DB_TYPE = 'sqlite';
     process.env.DB_SQLITE_PATH = '.data/test.sqlite';
 
-    // Import and initialize the data source
-    const { AppDataSource } = await import('@/Shared/infrastructure/persistence/TypeOrmConfig');
-    dataSource = AppDataSource;
+    // Create DataSource with explicit entity imports for testing
+    dataSource = new DataSource({
+      type: 'sqlite',
+      database: '.data/test.sqlite',
+      synchronize: true,
+      logging: false,
+      entities: [
+        StockItemEntity,
+        PackageEntity,
+      ],
+    });
 
     await dataSource.initialize();
 
-    // Create repository instance
+    // Create repository instance with the test DataSource
     eventBus = new MockEventBus();
-    repository = new TypeOrmStockItemRepository(eventBus);
+    repository = new TypeOrmStockItemRepository(eventBus, dataSource);
+
+    // Also create a repository without eventBus for the test
+    const repositoryWithoutEventBus = new TypeOrmStockItemRepository(undefined, dataSource);
   });
 
   afterAll(async () => {
@@ -59,16 +72,18 @@ describe('TypeOrmStockItemRepository Integration', () => {
   });
 
   beforeEach(async () => {
-    // Clear the main repository instead of using dataSource
-    if (repository) {
-      // Use the repository's clear method or recreate it
-      const stockItemRepo = dataSource.getRepository('StockItemEntity');
-      await stockItemRepo.clear();
-      
-      const packageRepo = dataSource.getRepository('PackageEntity');
-      await packageRepo.clear();
+    if (repository && eventBus) {
+      // Clear the main repository instead of using dataSource
+      if (repository) {
+        // Use the repository's clear method or recreate it
+        const stockItemRepo = dataSource.getRepository(StockItemEntity);
+        await stockItemRepo.clear();
+        
+        const packageRepo = dataSource.getRepository(PackageEntity);
+        await packageRepo.clear();
+      }
+      eventBus.clear(); // Only call if eventBus exists
     }
-    eventBus.clear();
   });
 
   describe('repository initialization', () => {
@@ -83,7 +98,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
     });
 
     it('should handle optional eventBus parameter', () => {
-      const repositoryWithoutEventBus = new TypeOrmStockItemRepository();
+      const repositoryWithoutEventBus = new TypeOrmStockItemRepository(undefined, dataSource);
       expect(repositoryWithoutEventBus).toBeDefined();
     });
   });
@@ -172,7 +187,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
     });
 
     it('should not publish events when eventBus is not provided', async () => {
-      const repositoryWithoutEventBus = new TypeOrmStockItemRepository();
+      const repositoryWithoutEventBus = new TypeOrmStockItemRepository(undefined, dataSource);
       const id = StockItemId.random();
       const stockItem = StockItem.add({
         id,
@@ -499,7 +514,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
     });
 
     it('should handle database errors gracefully', async () => {
-      const errorRepository = new TypeOrmStockItemRepository(eventBus);
+      const errorRepository = new TypeOrmStockItemRepository(eventBus, dataSource);
       
       // Mock the repository's save method to throw an error
       const originalSave = (errorRepository as any).repository.save;
@@ -553,7 +568,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       };
 
       // Create repository with error-throwing event bus
-      const errorRepository = new TypeOrmStockItemRepository(errorEventBus);
+      const errorRepository = new TypeOrmStockItemRepository(errorEventBus, dataSource);
       const id = StockItemId.random();
       const stockItem = StockItem.add({
         id,

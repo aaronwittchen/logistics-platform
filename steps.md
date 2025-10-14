@@ -3141,10 +3141,7 @@ coverage
 docker build -t logistics-platform:latest .
 
 # Test
-docker run -e DB_HOST=host.docker.internal \
-  -e RABBITMQ_HOST=host.docker.internal \
-  -p 3000:3000 \
-  logistics-platform:latest
+docker run -d -e DB_HOST=host.docker.internal -e RABBITMQ_HOST=host.docker.internal -p 3004:3000 logistics-platform:latest
 ```
 
 **✅ Checkpoint**: Docker image built and tested
@@ -3394,6 +3391,14 @@ kubectl wait --for=condition=ready pod -l app=postgres -n logistics-platform --t
 kubectl wait --for=condition=ready pod -l app=rabbitmq -n logistics-platform --timeout=300s
 kubectl wait --for=condition=ready pod -l app=elasticsearch -n logistics-platform --timeout=300s
 ```
+minikube start --cpus=4 --memory=8192
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/postgres.yaml
+kubectl apply -f k8s/rabbitmq.yaml
+kubectl apply -f k8s/elasticsearch.yaml
+minikube dashboard
+kubectl config set-context --current --namespace=logistics-platform
+k9s
 
 **✅ Checkpoint**: Infrastructure deployed to Kubernetes
 

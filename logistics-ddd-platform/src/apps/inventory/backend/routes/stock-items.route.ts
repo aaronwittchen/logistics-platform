@@ -6,7 +6,7 @@ import { AddStockCommandHandler } from '../../../../Contexts/Inventory/StockItem
 import { ReserveStockCommandHandler } from '../../../../Contexts/Inventory/StockItem/application/ReserveStock/ReserveStockCommandHandler';
 import { TypeOrmStockItemRepository } from '../../../../Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
 import { EventBus } from '../../../../Shared/domain/EventBus';
-import { log } from '../../../../utils/log';
+import { log } from '@/utils/log';
 
 export function createStockItemsRouter(eventBus?: EventBus): Router {
   const router = Router();

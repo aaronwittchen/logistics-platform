@@ -1,7 +1,6 @@
 import type { EventBus } from '@/Shared/domain/EventBus';
 import { ReserveStockCommand } from './ReserveStockCommand';
 import type { StockItemRepository } from '../../domain/StockItemRepository';
-import { StockItem } from '../../domain/StockItem';
 import { StockItemId } from '../../domain/StockItemId';
 import { Quantity } from '../../domain/Quantity';
 

@@ -5,7 +5,7 @@ import { ElasticSearchTrackingProjectionRepository } from '../../../Contexts/Bac
 import { FindTrackingQueryHandler } from '../../../Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
 import { GetTrackingGetController } from '../../../Contexts/Backoffice/TrackingProjection/infrastructure/controllers/GetTrackingGetController';
 import { Router } from 'express';
-import { log } from '../../../utils/log';
+import { log } from '@/utils/log';
 
 export class BackofficeBackendApp {
   private server: HttpServer;

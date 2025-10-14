@@ -94,13 +94,16 @@ export abstract class ValueObject<TProps extends object> {
 
     // Make the properties deeply immutable
     this.props = deepFreeze({ ...(props as Record<string, unknown>) }) as Readonly<TProps>;
+    
+    // Make the entire instance immutable
+    Object.freeze(this);
   }
 
   /**
    * Optional validation hook for enforcing domain invariants.
    * Override in subclasses to throw errors for invalid props.
    */
-  protected validate(_props: TProps): void {}
+  protected validate(props: TProps): void {}
 
   /**
    * Compares two value objects for deep equality.

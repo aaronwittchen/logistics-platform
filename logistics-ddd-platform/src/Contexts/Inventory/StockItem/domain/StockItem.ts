@@ -4,7 +4,6 @@ import { StockItemName } from "./StockItemName";
 import { Quantity } from "./Quantity";
 import { StockItemAdded } from "./events/StockItemAdded";
 import { StockItemReserved } from "./events/StockItemReserved";
-import { Uuid } from "@/Shared/domain/Uuid";
 
 /**
  * Interface representing the primitive (serializable) shape of a StockItem.

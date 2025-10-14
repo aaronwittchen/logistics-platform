@@ -1,4 +1,4 @@
-import { DomainEvent } from "@/Shared/domain/DomainEvent";
+import { DomainEvent, DomainEventPrimitives } from "@/Shared/domain/DomainEvent";
 import { Uuid } from "@/Shared/domain/Uuid";
 import { StockItemId } from "../StockItemId";
 import { StockItemName } from "../StockItemName";
@@ -24,6 +24,9 @@ export interface StockItemAddedPayload {
  * - Provide serialization for event publishing
  */
 export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
+  /** Static event name for this domain event */
+  static EVENT_NAME = "inventory.stock_item.added";
+
   /**
    * Constructor
    *
@@ -60,5 +63,44 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
       name: this.stockItemName.value,
       quantity: this.stockQuantity.value,
     };
+  }
+
+  /**
+   * Static factory method to create from primitives
+   *
+   * @param primitives - serialized event data
+   * @returns new StockItemAdded instance
+   */
+  static fromPrimitives(primitives: DomainEventPrimitives): StockItemAdded {
+    // Handle both direct payload format and nested attributes format
+    const payload = (primitives as DomainEventPrimitives & { attributes?: unknown }).attributes || primitives;
+    
+    // Map RabbitMQ message structure to DomainEventPrimitives structure
+    const eventPrimitives: DomainEventPrimitives = {
+      aggregateId: primitives.aggregateId,
+      eventId: (primitives as DomainEventPrimitives & { id?: string }).id || primitives.eventId,
+      occurredOn: primitives.occurredOn,
+      eventName: (primitives as DomainEventPrimitives & { type?: string }).type || primitives.eventName,
+      eventVersion: (payload as DomainEventPrimitives & { eventVersion?: string }).eventVersion,
+      ...payload
+    };
+    
+    // Validate required payload fields before creating value objects
+    if (!eventPrimitives.name) {
+      throw new Error('Missing name in event attributes');
+    }
+    if (eventPrimitives.quantity === undefined || eventPrimitives.quantity === null) {
+      throw new Error('Missing quantity in event attributes');
+    }
+    
+    return new StockItemAdded(
+      {
+        aggregateId: StockItemId.from(eventPrimitives.aggregateId),
+        eventId: Uuid.from(eventPrimitives.eventId),
+        occurredOn: new Date(eventPrimitives.occurredOn)
+      },
+      StockItemName.from(eventPrimitives.name as string),
+      Quantity.from(eventPrimitives.quantity as number)
+    );
   }
 }

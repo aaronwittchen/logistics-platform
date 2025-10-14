@@ -1,4 +1,4 @@
-import { DomainEvent } from '@/Shared/domain/DomainEvent';
+import { DomainEvent, DomainEventPrimitives } from '@/Shared/domain/DomainEvent';
 import { Uuid } from '@/Shared/domain/Uuid';
 import { StockItemId } from '../StockItemId';
 import { Quantity } from '../Quantity';
@@ -25,6 +25,9 @@ export interface StockItemReservedPayload {
  * - Enable tracking of inventory reservations
  */
 export class StockItemReserved extends DomainEvent<StockItemReservedPayload> {
+  /** Static event name for this domain event */
+  static EVENT_NAME = 'inventory.stock_item.reserved';
+
   /**
    * Constructor
    *
@@ -75,24 +78,32 @@ export class StockItemReserved extends DomainEvent<StockItemReservedPayload> {
   /**
    * Static factory method to create from primitives
    *
-   * @param params - serialized event data
+   * @param primitives - serialized event data
    * @returns new StockItemReserved instance
    */
-  static fromPrimitives(params: {
-    aggregateId: string;
-    eventId: string;
-    occurredOn: Date;
-    attributes: { id: string; quantity: number; reservationId: string };
-  }): StockItemReserved {
+  static fromPrimitives(primitives: DomainEventPrimitives): StockItemReserved {
+    // Handle both direct payload format and nested attributes format
+    const payload = (primitives as DomainEventPrimitives & { attributes?: unknown }).attributes || primitives;
+    
+    // Map RabbitMQ message structure to DomainEventPrimitives structure
+    const eventPrimitives: DomainEventPrimitives = {
+      aggregateId: primitives.aggregateId,
+      eventId: (primitives as DomainEventPrimitives & { id?: string }).id || primitives.eventId,
+      occurredOn: primitives.occurredOn,
+      eventName: (primitives as DomainEventPrimitives & { type?: string }).type || primitives.eventName,
+      eventVersion: (payload as DomainEventPrimitives & { eventVersion?: string }).eventVersion,
+      ...payload
+    };
+    
     return new StockItemReserved(
       {
-        aggregateId: StockItemId.from(params.aggregateId),
-        eventId: Uuid.from(params.eventId),
-        occurredOn: params.occurredOn
+        aggregateId: StockItemId.from(eventPrimitives.aggregateId),
+        eventId: Uuid.from(eventPrimitives.eventId),
+        occurredOn: new Date(eventPrimitives.occurredOn)
       },
-      StockItemId.from(params.attributes.id),
-      Quantity.from(params.attributes.quantity),
-      params.attributes.reservationId
+      StockItemId.from(eventPrimitives.stockItemId as string),
+      Quantity.from(eventPrimitives.reservedQuantity as number),
+      eventPrimitives.reservationIdentifier as string
     );
   }
 }

@@ -1,4 +1,4 @@
-name: CI - Bun Tests
+name: CI - Tests & Code Quality
 
 on:
   push:
@@ -7,6 +7,30 @@ on:
     branches: [ main, master ]
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: logistics-ddd-platform
+        run: bun install --frozen-lockfile
+
+      - name: Run ESLint
+        working-directory: logistics-ddd-platform
+        run: bun run lint
+
+      - name: Check Prettier formatting
+        working-directory: logistics-ddd-platform
+        run: bun run format:check
+
   test:
     runs-on: ubuntu-latest
     services:
@@ -51,10 +75,6 @@ jobs:
       - name: Install dependencies
         working-directory: logistics-ddd-platform
         run: bun install --frozen-lockfile
-
-      # - name: Run migrations
-      #   working-directory: logistics-ddd-platform
-      #   run: bun run typeorm migration:run
 
       - name: Run tests
         working-directory: logistics-ddd-platform

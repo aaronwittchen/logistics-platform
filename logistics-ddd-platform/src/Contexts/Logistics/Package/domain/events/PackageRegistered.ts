@@ -1,4 +1,4 @@
-import { DomainEvent } from '@/Shared/domain/DomainEvent';
+import { DomainEvent, DomainEventPrimitives } from '@/Shared/domain/DomainEvent';
 import { Uuid } from '@/Shared/domain/Uuid';
 
 /**
@@ -70,21 +70,29 @@ export class PackageRegistered extends DomainEvent {
   /**
    * Static factory method to create from primitives
    *
-   * @param params - serialized event data
+   * @param primitives - serialized event data
    * @returns new PackageRegistered instance
    */
-  static fromPrimitives(params: {
-    aggregateId: string;
-    eventId: string;
-    occurredOn: Date;
-    attributes: { id: string; trackingNumber: string; reservationId: string };
-  }): PackageRegistered {
+  static fromPrimitives(primitives: DomainEventPrimitives): PackageRegistered {
+    // Handle both direct payload format and nested attributes format
+    const payload = (primitives as any).attributes || primitives;
+    
+    // Map RabbitMQ message structure to DomainEventPrimitives structure
+    const eventPrimitives: DomainEventPrimitives = {
+      aggregateId: primitives.aggregateId,
+      eventId: (primitives as any).id || primitives.eventId,
+      occurredOn: primitives.occurredOn,
+      eventName: (primitives as any).type || primitives.eventName,
+      eventVersion: payload.eventVersion,
+      ...payload
+    };
+    
     return new PackageRegistered(
-      params.attributes.id,
-      params.attributes.trackingNumber,
-      params.attributes.reservationId,
-      params.eventId,
-      params.occurredOn
+      eventPrimitives.id as string,
+      eventPrimitives.trackingNumber as string,
+      eventPrimitives.reservationId as string,
+      eventPrimitives.eventId,
+      new Date(eventPrimitives.occurredOn)
     );
   }
 }

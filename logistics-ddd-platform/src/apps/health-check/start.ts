@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { HealthCheckApp } from './HealthCheckApp';
 import { AppDataSource } from '../../Shared/infrastructure/persistence/TypeOrmConfig';
-import { log } from '../../utils/log';
+import { log } from '@/utils/log';
 
 async function start() {
   log.load('Starting Health Check Service...');

@@ -1,5 +1,7 @@
 {
   "name": "logistics-ddd-platform",
+  "version": "1.0.0",
+  "description": "DDD-based logistics platform with inventory, tracking, and backoffice",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -7,13 +9,19 @@
     "test": "bun test tests/**/*.{test,spec}.{js,ts}",
     "test:watch": "bun test tests/**/*.{test,spec}.{js,ts} --watch",
     "test:coverage": "bun test tests/**/*.{test,spec}.{js,ts} --coverage",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix",
+    "format": "prettier --write src/**/*.{ts,js}",
+    "format:check": "prettier --check src/**/*.{ts,js}",
+    "build": "bun run tsc",
+    "type-check": "tsc --noEmit",
     "dev": "bun --watch src/apps/inventory/backend/start.ts",
+    "dev:inventory": "bun --watch src/apps/inventory/backend/start.ts",
+    "dev:backoffice": "bun --watch src/apps/backoffice/backend/start.ts",
     "start": "bun src/apps/inventory/backend/start.ts",
     "consumer:inventory": "bun src/apps/inventory/consumers/start.ts",
     "consumer:backoffice": "bun src/apps/backoffice/consumers/start.ts",
-    "consumer:logistics": "ts-node src/apps/logistics/consumers/start.ts",
-    "dev:backoffice": "bun --watch src/apps/backoffice/backend/start.ts",
-    "start:backoffice": "bun src/apps/backoffice/backend/start.ts"
+    "consumer:logistics": "bun src/apps/logistics/consumers/start.ts"
   },
   "devDependencies": {
     "@types/amqplib": "0.10.6",

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logistics-ingress
+  namespace: logistics-platform
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: logistics.local
+      http:
+        paths:
+          - path: /api/inventory
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-api
+                port:
+                  number: 80
+          - path: /api/backoffice
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-api
+                port:
+                  number: 80

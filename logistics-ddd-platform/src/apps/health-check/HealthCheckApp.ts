@@ -1,8 +1,7 @@
 import { HttpServer } from '../../Shared/infrastructure/http/HttpServer';
 import { Router } from 'express';
 import { AppDataSource } from '../../Shared/infrastructure/persistence/TypeOrmConfig';
-import { ElasticSearchClient } from '../../Shared/infrastructure/persistence/ElasticSearchClient';
-import { log } from '../../utils/log';
+import { log } from '@/utils/log';
 
 export class HealthCheckApp {
   private server: HttpServer;
@@ -97,8 +96,8 @@ export class HealthCheckApp {
       await AppDataSource.query('SELECT 1');
       const responseTime = Date.now() - start;
       return { status: 'ok', responseTime };
-    } catch (error: any) {
-      return { status: 'error', error: error.message };
+    } catch (error: unknown) {
+      return { status: 'error', error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -145,8 +144,8 @@ export class HealthCheckApp {
       } else {
         return { status: 'error', responseTime, error: `HTTP ${response.status}: ${response.statusText}` };
       }
-    } catch (error: any) {
-      return { status: 'error', error: error.message };
+    } catch (error: unknown) {
+      return { status: 'error', error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -167,8 +166,8 @@ export class HealthCheckApp {
       // Basic RabbitMQ connectivity check
       const responseTime = Date.now() - start;
       return { status: 'ok', responseTime };
-    } catch (error: any) {
-      return { status: 'error', error: error.message };
+    } catch (error: unknown) {
+      return { status: 'error', error: error instanceof Error ? error.message : String(error) };
     }
   }
 

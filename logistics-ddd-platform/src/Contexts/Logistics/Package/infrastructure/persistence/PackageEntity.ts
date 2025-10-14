@@ -1,7 +1,5 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 import { Package } from "../../domain/Package";
-import { PackageId } from "../../domain/PackageId";
-import { TrackingNumber } from "../../domain/TrackingNumber";
 
 /**
  * TypeORM entity representing the Package table in the database.
@@ -26,7 +24,7 @@ export class PackageEntity {
 
     /** Package status */
     @Column({ type: "varchar", length: 20 })
-    status!: "registered" | "in_transit" | "delivered";
+    status!: "uninitialized" | "registered" | "in_transit" | "delivered";
 
   /**
    * Converts a Package domain aggregate into a TypeORM entity.

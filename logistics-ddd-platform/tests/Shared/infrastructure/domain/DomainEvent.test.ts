@@ -176,6 +176,7 @@ describe('DomainEvent', () => {
         eventId: '660e8400-e29b-41d4-a716-446655440000',
         occurredOn: '2023-01-01T12:00:00.000Z',
         eventName: 'test.domain.event',
+        eventVersion: '1.0.0',
         testData: 'test data',
         testNumber: 42,
       } satisfies DomainEventPrimitives);
@@ -202,6 +203,7 @@ describe('DomainEvent', () => {
         eventId: expect.any(String),
         occurredOn: expect.any(String),
         eventName: 'another.test.event',
+        eventVersion: '1.0.0',
         message: 'test message',
       } satisfies DomainEventPrimitives);
     });
@@ -234,6 +236,7 @@ describe('DomainEvent', () => {
         eventId: expect.any(String),
         occurredOn: expect.any(String),
         eventName: 'empty.payload.event',
+        eventVersion: '1.0.0',
       } satisfies DomainEventPrimitives);
     });
   });

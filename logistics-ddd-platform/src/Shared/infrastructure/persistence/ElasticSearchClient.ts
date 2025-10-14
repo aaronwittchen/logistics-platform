@@ -1,12 +1,12 @@
 import { Client } from '@elastic/elasticsearch';
-import { log } from '../../utils/log';
+import { log } from '@/utils/log';
 
 export class ElasticSearchClient {
   private client: Client;
 
   constructor() {
     this.client = new Client({
-      node: process.env.ELASTICSEARCH_URL || 'http://localhost:9200',
+      node: process.env.ELASTICSEARCH_URL || 'http://elasticsearch:9200',
     });
   }
 
@@ -106,9 +106,12 @@ export class ElasticSearchClient {
 
   async healthCheck(): Promise<boolean> {
     try {
-      const health = await this.client.cluster.health();
-      return health.status !== 'red';
+      // Use a simpler ping/info request instead of cluster.health()
+      const info = await this.client.info();
+      log.info(`ElasticSearch connected - version: ${info.version?.number || 'unknown'}`);
+      return true;
     } catch (error) {
+      log.err(`ElasticSearch health check failed: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }

@@ -97,17 +97,13 @@ export abstract class DomainEvent<TPayload extends object = object> {
   protected abstract toPayload(): TPayload;
 
   /**
-   * Convert the DomainEvent into a plain object suitable for:
-   * - persistence in event stores
-   * - serialization over messaging systems
-   * - logging or debugging
-   *
-   * Includes:
-   * - aggregateId
-   * - eventId
-   * - occurredOn (as ISO string)
-   * - eventName
-   * - concrete payload from `toPayload()`
+   * Convert the DomainEvent from a plain object suitable for deserialization.
+   * This is the inverse of toPrimitives().
+   */
+  public static fromPrimitives?(primitives: DomainEventPrimitives): DomainEvent;
+
+  /**
+   * Enhanced serialization that includes event metadata for versioning and debugging.
    */
   public toPrimitives(): DomainEventPrimitives {
     return {
@@ -115,7 +111,34 @@ export abstract class DomainEvent<TPayload extends object = object> {
       eventId: this.eventId.value,
       occurredOn: this.occurredOn.toISOString(),
       eventName: this.eventName(),
-      ...this.toPayload(), // merge event-specific payload
-    } satisfies DomainEventPrimitives;
+      eventVersion: this.eventVersion(),
+      ...this.toPayload(),
+    };
+  }
+
+  /**
+   * Version of this event type for schema evolution support.
+   * Override in concrete events if needed.
+   */
+  protected eventVersion(): string {
+    return '1.0.0';
+  }
+
+  /**
+   * Validate that the event can be properly reconstructed from primitives.
+   */
+  public static validatePrimitives?(primitives: DomainEventPrimitives): void {
+    if (!primitives.aggregateId) {
+      throw new Error('DomainEvent requires aggregateId');
+    }
+    if (!primitives.eventId) {
+      throw new Error('DomainEvent requires eventId');
+    }
+    if (!primitives.occurredOn) {
+      throw new Error('DomainEvent requires occurredOn');
+    }
+    if (!primitives.eventName) {
+      throw new Error('DomainEvent requires eventName');
+    }
   }
 }

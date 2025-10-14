@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
 import { RabbitMQConsumer } from '../../../Shared/infrastructure/event-bus/RabbitMQConsumer';
 import { StockItemAddedLogger } from '../../../Contexts/Inventory/StockItem/application/subscribers/StockItemAddedLogger';
-import { log } from '../../../utils/log';
+import { log } from '@/utils/log';
 
 async function startConsumer() {
   const connection = new RabbitMQConnection({

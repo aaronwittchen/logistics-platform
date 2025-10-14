@@ -3,6 +3,8 @@ import { StockItemReserved } from '../../../Inventory/StockItem/domain/events/St
 import { TrackingProjectionRepository } from '../domain/TrackingProjectionRepository';
 import { TrackingView } from '../domain/TrackingView';
 import { Quantity } from '../../../Inventory/StockItem/domain/Quantity';
+import { StockItemId } from '../../../Inventory/StockItem/domain/StockItemId';
+import { Uuid } from '@/Shared/domain/Uuid';
 import { log } from '@/utils/log';
 
 export class StockItemReservedProjector
@@ -13,15 +15,22 @@ export class StockItemReservedProjector
   subscribedTo() {
     return [{
       EVENT_NAME: 'inventory.stock_item.reserved',
-      fromPrimitives: (data: any) => {
+      fromPrimitives: (data: {
+        aggregateId: string;
+        eventId: string;
+        occurredOn: string;
+        id: string;
+        quantity: number;
+        reservationId: string;
+      }) => {
         const { aggregateId, eventId, occurredOn, id, quantity, reservationId } = data;
         return new StockItemReserved(
           {
-            aggregateId,
-            eventId,
+            aggregateId: StockItemId.from(aggregateId),
+            eventId: Uuid.from(eventId),
             occurredOn: new Date(occurredOn)
           },
-          id,
+          StockItemId.from(id),
           Quantity.from(quantity),
           reservationId
         );

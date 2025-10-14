@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { log } from "../../../utils/log";
+import { log } from "@/utils/log";
 import { RabbitMQConnection } from "../../../Shared/infrastructure/event-bus/RabbitMQConnection";
 import { RabbitMQConsumer } from "../../../Shared/infrastructure/event-bus/RabbitMQConsumer";
 import { ElasticSearchClient } from "../../../Shared/infrastructure/persistence/ElasticSearchClient";

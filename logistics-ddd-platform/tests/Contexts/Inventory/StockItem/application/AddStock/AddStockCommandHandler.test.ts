@@ -427,13 +427,16 @@ describe('AddStockCommandHandler', () => {
 
     it('should not fail if eventBus publish throws error', async () => {
       const errorEventBus = new MockEventBus();
-      const errorHandler = new AddStockCommandHandler(repository, errorEventBus);
-
-      // Override publish to throw an error
-      const originalPublish = errorEventBus.publish.bind(errorEventBus);
+      
+      // Store original method
+      const originalPublish = errorEventBus.publish;
+      
+      // Override with error-throwing version
       errorEventBus.publish = async (events: DomainEvent[]) => {
         throw new Error('Event bus connection failed');
       };
+      
+      const errorHandler = new AddStockCommandHandler(repository, errorEventBus);
 
       const command = new AddStockCommand(
         '550e8400-e29b-41d4-a716-446655440000',
@@ -444,7 +447,7 @@ describe('AddStockCommandHandler', () => {
       // Should still save to repository even if event publishing fails
       await errorHandler.execute(command);
 
-      expect(repository.saveCallCount).toBe(1);
+      expect(repository.saveCallCount).toBe(1); // Verifies item was saved despite event bus failure
       const savedItem = repository.savedItem!;
       expect(savedItem.name.value).toBe('Event Bus Error Test');
     });
