@@ -9,7 +9,7 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
     ecmaFeatures: {
-      jsx: false, // You're not using JSX
+      jsx: false,
     },
   },
   
