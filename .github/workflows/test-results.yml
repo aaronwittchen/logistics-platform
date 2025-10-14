@@ -37,6 +37,14 @@ jobs:
     - name: Deploy to GitHub Pages (if on main branch)
       if: github.ref == 'refs/heads/main'
       run: |
-        # Copy test results to a public location
+        # Create public directory for GitHub Pages
         mkdir -p public
+        
+        # Copy test results JSON
         cp logistics-ddd-platform/test-results.json public/
+        
+        # Copy the HTML file to public directory
+        cp frontend/index.html public/
+        
+        # List files for verification
+        ls -la public/
