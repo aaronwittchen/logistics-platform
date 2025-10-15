@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { HttpServer } from '../../../Shared/infrastructure/http/HttpServer';
-import { ElasticSearchClient } from '../../../Shared/infrastructure/persistence/ElasticSearchClient';
-import { ElasticSearchTrackingProjectionRepository } from '../../../Contexts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
-import { FindTrackingQueryHandler } from '../../../Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
-import { GetTrackingGetController } from '../../../Contexts/Backoffice/TrackingProjection/infrastructure/controllers/GetTrackingGetController';
+import { HttpServer } from '@/Shared/infrastructure/http/HttpServer';
+import { ElasticSearchClient } from '@/Shared/infrastructure/persistence/ElasticSearchClient';
+import { ElasticSearchTrackingProjectionRepository } from '@/Contexts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
+import { FindTrackingQueryHandler } from '@/Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
+import { GetTrackingGetController } from '@/Contexts/Backoffice/TrackingProjection/infrastructure/controllers/GetTrackingGetController';
 import { Router } from 'express';
 import { log } from '@/utils/log';
 
@@ -33,7 +33,7 @@ export class BackofficeBackendApp {
   private async initializeInfrastructure(): Promise<void> {
     log.load('Checking infrastructure health...');
 
-    // Check ElasticSearch connection (optional for startup)
+    // Check ElasticSearch connection
     try {
       const esClient = new ElasticSearchClient();
       const isHealthy = await esClient.healthCheck();
@@ -49,48 +49,51 @@ export class BackofficeBackendApp {
       log.info('Projections will not be available until ElasticSearch is running');
     }
   }
-  
+
   private registerRoutes(): void {
     const router = Router();
     log.load('Registering Backoffice routes...');
-  
+
     // Check if ElasticSearch is available for CQRS read infrastructure
     const esClient = new ElasticSearchClient();
-    esClient.healthCheck().then((isHealthy) => {
-      if (isHealthy) {
-        log.ok('ElasticSearch available - registering tracking routes');
-  
-        const repository = new ElasticSearchTrackingProjectionRepository(esClient);
-        const queryHandler = new FindTrackingQueryHandler(repository);
-        const controller = new GetTrackingGetController(queryHandler);
-  
-        // Tracking query endpoints
-        router.get('/tracking/:id', (req, res) => controller.run(req, res));
-  
-        log.ok('Tracking routes registered');
-      } else {
-        log.warn('ElasticSearch not available - tracking routes disabled');
-        log.info('Start ElasticSearch to enable projection queries');
-  
-        // Register fallback route for when ElasticSearch is not available
+    esClient
+      .healthCheck()
+      .then(isHealthy => {
+        if (isHealthy) {
+          log.ok('ElasticSearch available - registering tracking routes');
+
+          const repository = new ElasticSearchTrackingProjectionRepository(esClient);
+          const queryHandler = new FindTrackingQueryHandler(repository);
+          const controller = new GetTrackingGetController(queryHandler);
+
+          // Tracking query endpoints
+          router.get('/tracking/:id', (req, res) => controller.run(req, res));
+
+          log.ok('Tracking routes registered');
+        } else {
+          log.warn('ElasticSearch not available - tracking routes disabled');
+          log.info('Start ElasticSearch to enable projection queries');
+
+          // Register fallback route for when ElasticSearch is not available
+          router.get('/tracking/:id', (req, res) => {
+            res.status(503).json({
+              error: 'Tracking service unavailable',
+              message: 'ElasticSearch is not running. Start it with: docker-compose up -d elasticsearch',
+            });
+          });
+        }
+      })
+      .catch(error => {
+        log.err(`Failed to check ElasticSearch health: ${error}`);
+        // Register error route as fallback
         router.get('/tracking/:id', (req, res) => {
           res.status(503).json({
             error: 'Tracking service unavailable',
-            message: 'ElasticSearch is not running. Start it with: docker-compose up -d elasticsearch'
+            message: 'Unable to connect to ElasticSearch',
           });
         });
-      }
-    }).catch((error) => {
-      log.err(`Failed to check ElasticSearch health: ${error}`);
-      // Register error route as fallback
-      router.get('/tracking/:id', (req, res) => {
-        res.status(503).json({
-          error: 'Tracking service unavailable',
-          message: 'Unable to connect to ElasticSearch'
-        });
       });
-    });
-  
+
     this.server.registerRouter(router);
     log.ok('Backoffice routes registered');
   }

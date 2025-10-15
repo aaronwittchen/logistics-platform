@@ -1,5 +1,5 @@
-import { TrackingProjectionRepository } from '../../domain/TrackingProjectionRepository';
-import { TrackingView } from '../../domain/TrackingView';
+import { TrackingProjectionRepository } from '@/Contexts/Backoffice/TrackingProjection/domain/TrackingProjectionRepository';
+import { TrackingView } from '@/Contexts/Backoffice/TrackingProjection/domain/TrackingView';
 import { FindTrackingQuery } from './FindTrackingQuery';
 
 export class FindTrackingQueryHandler {

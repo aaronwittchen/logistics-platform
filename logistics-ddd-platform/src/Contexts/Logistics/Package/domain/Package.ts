@@ -33,9 +33,16 @@ export class Package extends AggregateRoot {
   private constructor(
     private readonly id: PackageId,
     private readonly trackingNumber: TrackingNumber,
-    private readonly reservationId: string
+    private readonly reservationId: string,
   ) {
     super();
+  }
+
+  /**
+   * Private method to set the package status (used by factory methods)
+   */
+  private setStatus(status: 'uninitialized' | 'registered' | 'in_transit' | 'delivered'): void {
+    this.status = status;
   }
 
   /**
@@ -46,24 +53,18 @@ export class Package extends AggregateRoot {
    * @param reservationId - the stock reservation this package fulfills
    * @returns a new Package instance
    */
-  static register(
-    id: PackageId,
-    trackingNumber: TrackingNumber,
-    reservationId: string
-  ): Package {
+  static register(id: PackageId, trackingNumber: TrackingNumber, reservationId: string): Package {
     const pkg = new Package(id, trackingNumber, reservationId);
 
     // Set status to registered since this is a properly registered package
-    (pkg as any).status = 'registered';
+    pkg.setStatus('registered');
 
     // Record a domain event for the package registration
-    pkg.record(
-      new PackageRegistered(
-        id.value,
-        trackingNumber.value,
-        reservationId
-      )
-    );
+    pkg.record(new PackageRegistered(
+      { aggregateId: id },
+      trackingNumber.value,
+      reservationId
+    ));
 
     return pkg;
   }
@@ -104,7 +105,7 @@ export class Package extends AggregateRoot {
   }
 
   /** Getter for the Package Status */
-  getStatus(): "uninitialized" | "registered" | "in_transit" | "delivered" {
+  getStatus(): 'uninitialized' | 'registered' | 'in_transit' | 'delivered' {
     return this.status;
   }
 
@@ -131,11 +132,11 @@ export class Package extends AggregateRoot {
     const pkg = new Package(
       new PackageId(primitives.id),
       new TrackingNumber(primitives.trackingNumber),
-      primitives.reservationId
+      primitives.reservationId,
     );
 
     // Set the status directly since we're loading an existing package
-    (pkg as any).status = primitives.status;
+    pkg.setStatus(primitives.status);
 
     return pkg;
   }

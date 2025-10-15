@@ -1,0 +1,16 @@
+.env
+.env.local
+.env.*.local
+
+# SQLite database files
+.data/
+*.sqlite
+*.db
+
+.vscode/
+
+donesteps.md
+notes.md
+steps.md
+test1.md
+test2.md

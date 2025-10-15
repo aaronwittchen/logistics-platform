@@ -1,6 +1,4 @@
-import { RabbitMQConnection } from '@/Shared/infrastructure/event-bus/RabbitMQConnection';
 import { RabbitMQEventBus } from '@/Shared/infrastructure/event-bus/RabbitMQEventBus';
-import { CircuitBreaker } from '@/Shared/infrastructure/event-bus/CircuitBreaker';
 import { StockItemAdded } from '@/Contexts/Inventory/StockItem/domain/events/StockItemAdded';
 import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
 import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
@@ -11,19 +9,19 @@ class MockRabbitMQConnection {
   private channel: any;
   private connectionAttempts: number[] = [];
   private publishAttempts: any[] = [];
-  
+
   // Add missing properties from RabbitMQConnection
   public isConnecting = false;
   public reconnectAttempts = 0;
   public maxReconnectAttempts = 10;
   public reconnectDelay = 1000;
-  
+
   // Add missing config property
   public config = {
     hostname: 'localhost',
     port: 5672,
     username: 'guest',
-    password: 'guest'
+    password: 'guest',
   };
 
   constructor(private shouldFail: boolean = false) {}
@@ -61,12 +59,12 @@ class MockRabbitMQConnection {
     this.publishAttempts = [];
     this.connectionAttempts = [];
   }
-  
+
   // Add missing private methods from RabbitMQConnection
   private async handleConnectionError(): Promise<void> {
     // Mock implementation - do nothing for tests
   }
-  
+
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -90,11 +88,7 @@ describe('RabbitMQEventBus', () => {
       await eventBus.start();
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       await eventBus.publish([event]);
 
@@ -114,11 +108,7 @@ describe('RabbitMQEventBus', () => {
       await eventBus.start();
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       await eventBus.publish([event]);
 
@@ -144,11 +134,7 @@ describe('RabbitMQEventBus', () => {
       await retryEventBus.start();
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       // Should retry 3 times before giving up
       await expect(retryEventBus.publish([event])).rejects.toThrow();
@@ -168,18 +154,14 @@ describe('RabbitMQEventBus', () => {
       await retryEventBus.start();
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       await expect(retryEventBus.publish([event])).rejects.toThrow();
 
       // Check that dead letter exchange was used
       const channel = failingConnection.getChannel();
-      const dlqCall = channel.publish.mock.calls.find((call: any[]) => 
-        call[0] === 'test-dlq' && call[1] === 'inventory.stock_item.added.failed'
+      const dlqCall = channel.publish.mock.calls.find(
+        (call: any[]) => call[0] === 'test-dlq' && call[1] === 'inventory.stock_item.added.failed',
       );
 
       expect(dlqCall).toBeDefined();
@@ -193,11 +175,7 @@ describe('RabbitMQEventBus', () => {
       await eventBus.start();
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       await eventBus.publish([event]);
 
@@ -219,11 +197,7 @@ describe('RabbitMQEventBus', () => {
       await eventBus.start();
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new VersionedStockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new VersionedStockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       await eventBus.publish([event]);
 
@@ -246,11 +220,7 @@ describe('RabbitMQEventBus', () => {
 
       // Publish event
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       await eventBus.publish([event]);
 

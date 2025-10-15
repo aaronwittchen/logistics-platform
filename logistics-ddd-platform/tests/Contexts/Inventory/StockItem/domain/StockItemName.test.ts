@@ -1,4 +1,3 @@
-// logistics-ddd-platform/tests/Contexts/Inventory/StockItem/domain/StockItemName.test.ts
 import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
 
 describe('StockItemName', () => {

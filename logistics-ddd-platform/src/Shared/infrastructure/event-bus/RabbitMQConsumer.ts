@@ -1,5 +1,6 @@
-import { DomainEvent } from '../../domain/DomainEvent';
-import { DomainEventSubscriber } from '../../domain/DomainEventSubscriber';
+import { Message } from 'amqplib';
+import { DomainEvent } from '@/Shared/domain/DomainEvent';
+import { DomainEventSubscriber } from '@/Shared/domain/DomainEventSubscriber';
 import { RabbitMQConnection } from './RabbitMQConnection';
 import { log } from '@/utils/log';
 
@@ -15,14 +16,12 @@ export class RabbitMQConsumer {
   constructor(
     private readonly connection: RabbitMQConnection,
     private readonly exchangeName: string = 'domain_events',
-    private readonly options: ConsumerOptions = {}
+    private readonly options: ConsumerOptions = {},
   ) {
     this.deadLetterExchange = `${exchangeName}.dead-letter`;
   }
 
-  async start(
-    subscribers: Array<DomainEventSubscriber<DomainEvent>>
-  ): Promise<void> {
+  async start(subscribers: Array<DomainEventSubscriber<DomainEvent>>): Promise<void> {
     const channel = this.connection.getChannel();
     const maxRetries = this.options.maxRetries || 3;
     const retryDelay = this.options.retryDelay || 1000;
@@ -34,7 +33,7 @@ export class RabbitMQConsumer {
         const queueName = `${eventClass.EVENT_NAME}.${subscriber.constructor.name}`;
 
         // Create main queue
-        await channel.assertQueue(queueName, { 
+        await channel.assertQueue(queueName, {
           durable: true,
           arguments: {
             'x-dead-letter-exchange': this.deadLetterExchange,
@@ -43,14 +42,10 @@ export class RabbitMQConsumer {
         });
 
         // Bind queue to exchange
-        await channel.bindQueue(
-          queueName,
-          this.exchangeName,
-          eventClass.EVENT_NAME
-        );
+        await channel.bindQueue(queueName, this.exchangeName, eventClass.EVENT_NAME);
 
         // Consume messages with retry logic
-        await channel.consume(queueName, async (msg) => {
+        await channel.consume(queueName, async msg => {
           if (!msg) return;
 
           let attempt = 0;
@@ -69,7 +64,6 @@ export class RabbitMQConsumer {
               channel.ack(msg);
               log.ok(`Successfully processed event: ${eventClass.EVENT_NAME}`);
               return;
-
             } catch (error) {
               attempt++;
               log.err(`Error processing event ${eventClass.EVENT_NAME} (attempt ${attempt}): ${error}`);
@@ -116,11 +110,7 @@ export class RabbitMQConsumer {
     }
   }
 
-  private async handleConsumptionFailure(
-    msg: any, 
-    error: Error, 
-    eventName: string
-  ): Promise<void> {
+  private async handleConsumptionFailure(msg: Message, error: Error, eventName: string): Promise<void> {
     log.err(`Event ${eventName} permanently failed after retries. Sending to dead letter exchange.`);
 
     try {
@@ -138,12 +128,9 @@ export class RabbitMQConsumer {
         },
       });
 
-      channel.publish(
-        this.deadLetterExchange,
-        `${eventName}.failed`,
-        Buffer.from(deadLetterMessage),
-        { persistent: true }
-      );
+      channel.publish(this.deadLetterExchange, `${eventName}.failed`, Buffer.from(deadLetterMessage), {
+        persistent: true,
+      });
     } catch (dlqError) {
       log.err(`Failed to send failed event to dead letter exchange: ${dlqError}`);
     }

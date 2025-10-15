@@ -1,5 +1,5 @@
 // src/utils/log.ts
-import chalk from "chalk";
+import chalk from 'chalk';
 
 // Tag should be exactly 6 characters total (including brackets and padding)
 function formatTag(tag: string): string {
@@ -15,7 +15,7 @@ function timestamp(): string {
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
-  
+
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
@@ -25,9 +25,9 @@ function format(tag: string, color: (t: string) => string, msg: string): string 
 }
 
 export const log = {
-  ok: (msg: string) => console.log(format("[OK]", chalk.green, msg)),
-  info: (msg: string) => console.log(format("[INFO]", chalk.cyan, msg)),
-  warn: (msg: string) => console.warn(format("[WARN]", chalk.yellow, msg)),
-  err: (msg: string) => console.error(format("[ERR]", chalk.red, msg)),
-  load: (msg: string) => console.log(format("[...]", chalk.gray, msg)),
+  ok: (msg: string) => console.log(format('[OK]', chalk.green, msg)),
+  info: (msg: string) => console.log(format('[INFO]', chalk.cyan, msg)),
+  warn: (msg: string) => console.warn(format('[WARN]', chalk.yellow, msg)),
+  err: (msg: string) => console.error(format('[ERR]', chalk.red, msg)),
+  load: (msg: string) => console.log(format('[...]', chalk.gray, msg)),
 };

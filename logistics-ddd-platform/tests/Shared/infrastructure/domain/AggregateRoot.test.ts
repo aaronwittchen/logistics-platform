@@ -10,7 +10,7 @@ class TestDomainEvent extends DomainEvent {
     aggregateId: Uuid,
     public readonly message: string,
     eventId?: Uuid,
-    occurredOn?: Date
+    occurredOn?: Date,
   ) {
     super({ aggregateId, eventId, occurredOn });
   }
@@ -32,7 +32,7 @@ class AnotherTestDomainEvent extends DomainEvent {
     aggregateId: Uuid,
     public readonly data: number,
     eventId?: Uuid,
-    occurredOn?: Date
+    occurredOn?: Date,
   ) {
     super({ aggregateId, eventId, occurredOn });
   }
@@ -109,11 +109,11 @@ describe('AggregateRoot', () => {
 
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(3);
-      
+
       expect(events[0]).toBeInstanceOf(TestDomainEvent);
       expect(events[1]).toBeInstanceOf(AnotherTestDomainEvent);
       expect(events[2]).toBeInstanceOf(TestDomainEvent);
-      
+
       expect((events[0] as TestDomainEvent).message).toBe('first message');
       expect((events[1] as AnotherTestDomainEvent).data).toBe(42);
       expect((events[2] as TestDomainEvent).message).toBe('second message');
@@ -125,11 +125,11 @@ describe('AggregateRoot', () => {
 
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(3);
-      
+
       expect(events[0]).toBeInstanceOf(TestDomainEvent);
       expect(events[1]).toBeInstanceOf(AnotherTestDomainEvent);
       expect(events[2]).toBeInstanceOf(TestDomainEvent);
-      
+
       expect((events[0] as TestDomainEvent).message).toBe('message 1');
       expect((events[1] as AnotherTestDomainEvent).data).toBe(42);
       expect((events[2] as TestDomainEvent).message).toBe('message 3');
@@ -138,7 +138,7 @@ describe('AggregateRoot', () => {
     it('should record events with different aggregate IDs', () => {
       const aggregate1 = new TestAggregate('660e8400-e29b-41d4-a716-446655440000');
       const aggregate2 = new TestAggregate('770e8400-e29b-41d4-a716-446655440000');
-      
+
       aggregate1.doSomething('message from aggregate 1');
       aggregate2.doSomething('message from aggregate 2');
 
@@ -147,10 +147,10 @@ describe('AggregateRoot', () => {
 
       expect(events1).toHaveLength(1);
       expect(events2).toHaveLength(1);
-      
+
       expect(events1[0].aggregateId.value).toBe('660e8400-e29b-41d4-a716-446655440000');
       expect(events2[0].aggregateId.value).toBe('770e8400-e29b-41d4-a716-446655440000');
-      
+
       expect((events1[0] as TestDomainEvent).message).toBe('message from aggregate 1');
       expect((events2[0] as TestDomainEvent).message).toBe('message from aggregate 2');
     });
@@ -180,10 +180,10 @@ describe('AggregateRoot', () => {
 
       expect(events1).toHaveLength(1);
       expect(events2).toHaveLength(0);
-      
+
       // events1 should still contain the event
       expect(events1[0]).toBeDefined();
-      
+
       // Adding a new event should work independently
       aggregate.doSomething('another message');
       const events3 = aggregate.pullDomainEvents();
@@ -193,10 +193,10 @@ describe('AggregateRoot', () => {
 
     it('should handle pulling events when none are recorded', () => {
       const aggregate = new TestAggregate('550e8400-e29b-41d4-a716-446655440000');
-      
+
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(0);
-      
+
       // Should be able to record events after pulling empty list
       aggregate.doSomething('test message');
       const eventsAfter = aggregate.pullDomainEvents();
@@ -212,7 +212,7 @@ describe('AggregateRoot', () => {
 
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(2);
-      
+
       expect(events[0].eventId.value).not.toBe(events[1].eventId.value);
       expect(events[0].eventId.value).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
       expect(events[1].eventId.value).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
@@ -221,12 +221,12 @@ describe('AggregateRoot', () => {
     it('should set occurredOn timestamp for each event', () => {
       const aggregate = new TestAggregate('550e8400-e29b-41d4-a716-446655440000');
       const beforeRecording = new Date();
-      
+
       aggregate.doSomething('test message');
-      
+
       const afterRecording = new Date();
       const events = aggregate.pullDomainEvents();
-      
+
       expect(events).toHaveLength(1);
       expect(events[0].occurredOn).toBeInstanceOf(Date);
       expect(events[0].occurredOn.getTime()).toBeGreaterThanOrEqual(beforeRecording.getTime());
@@ -235,7 +235,7 @@ describe('AggregateRoot', () => {
 
     it('should handle events recorded at nearly the same time', () => {
       const aggregate = new TestAggregate('550e8400-e29b-41d4-a716-446655440000');
-      
+
       // Record multiple events in quick succession
       aggregate.doSomething('message 1');
       aggregate.doSomething('message 2');
@@ -243,7 +243,7 @@ describe('AggregateRoot', () => {
 
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(3);
-      
+
       // All events should have timestamps, but they might be the same millisecond
       events.forEach(event => {
         expect(event.occurredOn).toBeInstanceOf(Date);
@@ -257,12 +257,7 @@ describe('AggregateRoot', () => {
 
       // We need to modify our test domain event to accept custom eventId and occurredOn
       // For this test, let's create a simple event that uses the base constructor
-      const customEvent = new TestDomainEvent(
-        aggregate.getId(),
-        'custom message',
-        customEventId,
-        customTimestamp
-      );
+      const customEvent = new TestDomainEvent(aggregate.getId(), 'custom message', customEventId, customTimestamp);
 
       aggregate.recordCustomEvent(customEvent);
       const events = aggregate.pullDomainEvents();
@@ -276,25 +271,25 @@ describe('AggregateRoot', () => {
   describe('integration with domain events', () => {
     it('should work with events that have complex payloads', () => {
       const aggregate = new TestAggregate('550e8400-e29b-41d4-a716-446655440000');
-      
+
       // Record events with different payload types
       aggregate.doSomething('string message');
       aggregate.doSomethingElse(42);
-      
+
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(2);
-      
+
       // Verify the payloads through toPrimitives
       const primitives1 = events[0].toPrimitives();
       const primitives2 = events[1].toPrimitives();
-      
+
       expect(primitives1.message).toBe('string message');
       expect(primitives2.data).toBe(42);
     });
 
     it('should maintain event order in toPrimitives serialization', () => {
       const aggregate = new TestAggregate('550e8400-e29b-41d4-a716-446655440000');
-      
+
       aggregate.doSomething('first');
       aggregate.doSomethingElse(1);
       aggregate.doSomething('second');
@@ -306,7 +301,7 @@ describe('AggregateRoot', () => {
       expect(primitives[0].eventName).toBe('test.aggregate.event');
       expect(primitives[1].eventName).toBe('another.test.event');
       expect(primitives[2].eventName).toBe('test.aggregate.event');
-      
+
       expect(primitives[0].message).toBe('first');
       expect(primitives[1].data).toBe(1);
       expect(primitives[2].message).toBe('second');
@@ -324,7 +319,7 @@ describe('AggregateRoot', () => {
 
       const events = aggregate.pullDomainEvents();
       expect(events).toHaveLength(numberOfEvents);
-      
+
       // Verify all events have unique IDs
       const eventIds = events.map(event => event.eventId.value);
       const uniqueEventIds = new Set(eventIds);
@@ -337,14 +332,14 @@ describe('AggregateRoot', () => {
       // Simulate concurrent-like operations
       aggregate.doSomething('message 1');
       const events1 = aggregate.pullDomainEvents();
-      
+
       aggregate.doSomething('message 2');
       aggregate.doSomething('message 3');
       const events2 = aggregate.pullDomainEvents();
 
       expect(events1).toHaveLength(1);
       expect(events2).toHaveLength(2);
-      
+
       expect((events1[0] as TestDomainEvent).message).toBe('message 1');
       expect((events2[0] as TestDomainEvent).message).toBe('message 2');
       expect((events2[1] as TestDomainEvent).message).toBe('message 3');

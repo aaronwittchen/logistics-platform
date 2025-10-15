@@ -1,4 +1,4 @@
-import { Uuid } from "@/Shared/domain/Uuid";
+import { Uuid } from '@/Shared/domain/Uuid';
 
 /**
  * StockItemId

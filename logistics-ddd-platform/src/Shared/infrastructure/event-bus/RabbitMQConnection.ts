@@ -15,7 +15,7 @@ export class RabbitMQConnection {
       port: number;
       username: string;
       password: string;
-    }
+    },
   ) {}
 
   async connect(): Promise<void> {
@@ -43,7 +43,7 @@ export class RabbitMQConnection {
         password,
       });
 
-      this.connection.on('error', (error) => {
+      this.connection.on('error', error => {
         log.err(`RabbitMQ connection error: ${error}`);
         this.handleConnectionError();
       });

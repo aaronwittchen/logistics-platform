@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { StockItem } from "../../domain/StockItem";
-import { StockItemId } from "../../domain/StockItemId";
-import { StockItemName } from "../../domain/StockItemName";
-import { Quantity } from "../../domain/Quantity";
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { StockItem } from '@/Contexts/Inventory/StockItem/domain/StockItem';
+import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
+import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
+import { Quantity } from '@/Contexts/Inventory/StockItem/domain/Quantity';
 
 /**
  * TypeORM entity representing the StockItem table in the database.
@@ -11,18 +11,18 @@ import { Quantity } from "../../domain/Quantity";
  * - Define the database schema for stock items
  * - Map between database rows and domain aggregates
  */
-@Entity({ name: "stock_items" })
+@Entity({ name: 'stock_items' })
 export class StockItemEntity {
   /** Primary key (UUID string) */
-  @PrimaryColumn({ type: "varchar", length: 36 })
+  @PrimaryColumn({ type: 'varchar', length: 36 })
   id!: string;
 
   /** Stock item name (max 100 characters) */
-  @Column({ type: "varchar", length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   name!: string;
 
   /** Quantity of stock item */
-  @Column({ type: "int" })
+  @Column({ type: 'int' })
   quantity!: number;
 
   /**

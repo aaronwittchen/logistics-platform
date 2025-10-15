@@ -1,9 +1,9 @@
-import { DomainEvent } from './DomainEvent';
+import { DomainEvent, DomainEventPrimitives } from './DomainEvent';
 
 export interface DomainEventSubscriber<T extends DomainEvent> {
   subscribedTo(): Array<{
     EVENT_NAME: string;
-    fromPrimitives: (data: any) => T;
+    fromPrimitives: (data: DomainEventPrimitives) => T;
   }>;
   on(event: T): Promise<void>;
 }

@@ -1,6 +1,6 @@
-import type { Request, Response } from "express";
-import { AddStockCommandHandler } from "../../application/AddStock/AddStockCommandHandler";
-import { AddStockCommand } from "../../application/AddStock/AddStockCommand";
+import type { Request, Response } from 'express';
+import { AddStockCommandHandler } from '@/Contexts/Inventory/StockItem/application/AddStock/AddStockCommandHandler';
+import { AddStockCommand } from '@/Contexts/Inventory/StockItem/application/AddStock/AddStockCommand';
 
 /**
  * @swagger
@@ -54,7 +54,7 @@ export class AddStockPostController {
   public run = async (req: Request, res: Response): Promise<void> => {
     const { id, name, quantity } = req.body ?? {};
     if (!id || !name || quantity === undefined) {
-      res.status(400).json({ error: "id, name and quantity are required" });
+      res.status(400).json({ error: 'id, name and quantity are required' });
       return;
     }
     const command = AddStockCommand.fromPrimitives({ id, name, quantity: Number(quantity) });

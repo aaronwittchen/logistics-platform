@@ -1,4 +1,3 @@
-// logistics-ddd-platform/tests/Contexts/Logistics/Package/domain/TrackingNumber.test.ts
 import { TrackingNumber } from '@/Contexts/Logistics/Package/domain/TrackingNumber';
 
 describe('TrackingNumber', () => {
@@ -11,7 +10,7 @@ describe('TrackingNumber', () => {
     it('should generate random tracking number', () => {
       const trackingNumber1 = TrackingNumber.generate();
       const trackingNumber2 = TrackingNumber.generate();
-      
+
       expect(trackingNumber1.value).toHaveLength(10);
       expect(trackingNumber2.value).toHaveLength(10);
       expect(trackingNumber1.value).not.toBe(trackingNumber2.value);
@@ -34,17 +33,27 @@ describe('TrackingNumber', () => {
     });
 
     it('should throw error for invalid characters', () => {
-      expect(() => TrackingNumber.from('ABCD12345!')).toThrow('Tracking number must contain only uppercase letters and numbers');
-      expect(() => TrackingNumber.from('abcd123456')).toThrow('Tracking number must contain only uppercase letters and numbers');
-      expect(() => TrackingNumber.from('ABCD12345-')).toThrow('Tracking number must contain only uppercase letters and numbers');
+      expect(() => TrackingNumber.from('ABCD12345!')).toThrow(
+        'Tracking number must contain only uppercase letters and numbers',
+      );
+      expect(() => TrackingNumber.from('abcd123456')).toThrow(
+        'Tracking number must contain only uppercase letters and numbers',
+      );
+      expect(() => TrackingNumber.from('ABCD12345-')).toThrow(
+        'Tracking number must contain only uppercase letters and numbers',
+      );
     });
 
     it('should throw error for lowercase letters', () => {
-      expect(() => TrackingNumber.from('abcd123456')).toThrow('Tracking number must contain only uppercase letters and numbers');
+      expect(() => TrackingNumber.from('abcd123456')).toThrow(
+        'Tracking number must contain only uppercase letters and numbers',
+      );
     });
 
     it('should throw error for special characters', () => {
-      expect(() => TrackingNumber.from('ABCD12345!')).toThrow('Tracking number must contain only uppercase letters and numbers');
+      expect(() => TrackingNumber.from('ABCD12345!')).toThrow(
+        'Tracking number must contain only uppercase letters and numbers',
+      );
     });
   });
 
@@ -83,20 +92,22 @@ describe('TrackingNumber', () => {
   describe('equality', () => {
     it('should not be equal to tracking number with different case', () => {
       // This should throw an error during construction because lowercase is not allowed
-      expect(() => TrackingNumber.from('abcd123456')).toThrow('Tracking number must contain only uppercase letters and numbers');
+      expect(() => TrackingNumber.from('abcd123456')).toThrow(
+        'Tracking number must contain only uppercase letters and numbers',
+      );
     });
   });
 
   describe('uniqueness of generated numbers', () => {
     it('should generate unique tracking numbers', () => {
       const generatedNumbers = new Set();
-      
+
       for (let i = 0; i < 1000; i++) {
         const trackingNumber = TrackingNumber.generate();
         expect(generatedNumbers.has(trackingNumber.value)).toBe(false);
         generatedNumbers.add(trackingNumber.value);
       }
-      
+
       expect(generatedNumbers.size).toBe(1000);
     });
   });

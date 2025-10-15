@@ -1,3 +1,3 @@
 export class FindTrackingQuery {
-    constructor(public readonly id: string) {}
-  }
+  constructor(public readonly id: string) {}
+}

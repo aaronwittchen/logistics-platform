@@ -9,6 +9,7 @@
     "test": "bun test tests/**/*.{test,spec}.{js,ts}",
     "test:watch": "bun test tests/**/*.{test,spec}.{js,ts} --watch",
     "test:coverage": "bun test tests/**/*.{test,spec}.{js,ts} --coverage",
+    "test:perf": "bun test tests/**/*.perf.{test,spec}.{js,ts}",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix",
     "format": "prettier --write src/**/*.{ts,js}",

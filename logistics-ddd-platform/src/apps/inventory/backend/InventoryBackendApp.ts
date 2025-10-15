@@ -1,18 +1,18 @@
-import "reflect-metadata";
-import { HttpServer } from '../../../Shared/infrastructure/http/HttpServer';
-import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOrmConfig';
-import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
+import 'reflect-metadata';
+import { HttpServer } from '@/Shared/infrastructure/http/HttpServer';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
+import { RabbitMQConnection } from '@/Shared/infrastructure/event-bus/RabbitMQConnection';
 import { createStockItemsRouter } from './routes/stock-items.route';
-import { RabbitMQEventBus } from '../../../Shared/infrastructure/event-bus/RabbitMQEventBus';
+import { RabbitMQEventBus } from '@/Shared/infrastructure/event-bus/RabbitMQEventBus';
 import { log } from '@/utils/log';
-import { createHealthRouter } from "../routes/health.route";
+import { createHealthRouter } from '../routes/health.route';
 
 /**
  * Utility to read environment variables with an optional fallback
  */
 function env(name: string, fallback?: string): string | undefined {
   const v = process.env[name];
-  return v === undefined || v === "" ? fallback : v;
+  return v === undefined || v === '' ? fallback : v;
 }
 
 export class InventoryBackendApp {
@@ -44,10 +44,10 @@ export class InventoryBackendApp {
     try {
       log.load('Connecting to database...');
       await this.connectDatabase();
-      
+
       log.load('Registering routes...');
       this.registerRoutes();
-      
+
       if (this.eventBus) {
         log.load('Starting EventBus...');
         try {
@@ -58,10 +58,10 @@ export class InventoryBackendApp {
           this.eventBus = undefined; // Disable EventBus if connection fails
         }
       }
-      
+
       log.load('Starting HTTP server...');
       await this.server.start();
-      
+
       log.ok('Inventory backend started successfully');
     } catch (error) {
       log.err(`Failed to start inventory backend: ${error}`);
@@ -83,10 +83,10 @@ export class InventoryBackendApp {
     try {
       const stockItemsRouter = createStockItemsRouter(this.eventBus);
       this.server.registerRouter(stockItemsRouter);
-      
+
       const healthRouter = createHealthRouter();
       this.server.registerRouter(healthRouter);
-      
+
       log.ok('Routes registered');
     } catch (error) {
       log.err(`Route registration failed: ${error}`);

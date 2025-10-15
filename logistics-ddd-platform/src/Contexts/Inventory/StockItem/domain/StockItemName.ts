@@ -1,4 +1,4 @@
-import { ValueObject } from "@/Shared/domain/ValueObject";
+import { ValueObject } from '@/Shared/domain/ValueObject';
 
 /**
  * Interface representing the properties of StockItemName.
@@ -11,7 +11,7 @@ interface StockItemNameProps {
  * StockItemName
  *
  * A ValueObject representing the name of a Stock Item in the domain.
- * 
+ *
  * Responsibilities:
  * - Enforce validation rules for stock item names
  * - Ensure immutability
@@ -43,11 +43,9 @@ export class StockItemName extends ValueObject<StockItemNameProps> {
    */
   protected validate({ value }: StockItemNameProps): void {
     const trimmed = value?.trim();
-    if (!trimmed) throw new Error("StockItemName cannot be empty");
-    if (trimmed.length < StockItemName.MIN_LENGTH)
-      throw new Error("StockItemName too short");
-    if (trimmed.length > StockItemName.MAX_LENGTH)
-      throw new Error("StockItemName too long");
+    if (!trimmed) throw new Error('StockItemName cannot be empty');
+    if (trimmed.length < StockItemName.MIN_LENGTH) throw new Error('StockItemName too short');
+    if (trimmed.length > StockItemName.MAX_LENGTH) throw new Error('StockItemName too long');
   }
 
   /** Getter for the name value */

@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
-import { Package } from '../../domain/Package';
-import { PackageId } from '../../domain/PackageId';
-import { PackageRepository } from '../../domain/PackageRepository';
+import { Package } from '@/Contexts/Logistics/Package/domain/Package';
+import { PackageId } from '@/Contexts/Logistics/Package/domain/PackageId';
+import { PackageRepository } from '@/Contexts/Logistics/Package/domain/PackageRepository';
 import { PackageEntity } from './PackageEntity';
 import { EventBus } from '@/Shared/domain/EventBus';
 import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
@@ -68,7 +68,7 @@ export class TypeOrmPackageRepository implements PackageRepository {
         trackingNumber: entity.trackingNumber,
         reservationId: entity.reservationId,
         status: entity.status,
-      })
+      }),
     );
   }
 

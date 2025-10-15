@@ -133,7 +133,7 @@ describe('Quantity', () => {
 
       expect(result).not.toBe(qty1);
       expect(qty1.value).toBe(10); // Original unchanged
-      expect(qty2.value).toBe(3);  // Other unchanged
+      expect(qty2.value).toBe(3); // Other unchanged
     });
   });
 
@@ -305,7 +305,7 @@ describe('Quantity', () => {
 
       expect(availableStock.value).toBe(75);
       expect(currentStock.value).toBe(100); // Original unchanged
-      expect(reservedStock.value).toBe(25);  // Other unchanged
+      expect(reservedStock.value).toBe(25); // Other unchanged
     });
   });
 });

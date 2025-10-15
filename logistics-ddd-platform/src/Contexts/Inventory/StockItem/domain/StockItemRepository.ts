@@ -1,5 +1,5 @@
-import { StockItem } from "./StockItem";
-import { StockItemId } from "./StockItemId";
+import { StockItem } from './StockItem';
+import { StockItemId } from './StockItemId';
 
 /**
  * StockItemRepository
@@ -15,14 +15,14 @@ export interface StockItemRepository {
   /**
    * Save a StockItem aggregate.
    * Can be used for both creating new items or updating existing ones.
-   * 
+   *
    * @param stockItem - the StockItem aggregate to persist
    */
   save(stockItem: StockItem): Promise<void>;
 
   /**
    * Find a StockItem by its unique identifier.
-   * 
+   *
    * @param id - the StockItemId of the aggregate
    * @returns the StockItem aggregate if found, or null if not
    */
@@ -30,14 +30,14 @@ export interface StockItemRepository {
 
   /**
    * Find all StockItem aggregates.
-   * 
+   *
    * @returns array of all StockItem aggregates
    */
   findAll(): Promise<StockItem[]>;
 
   /**
    * Delete a StockItem aggregate by its ID.
-   * 
+   *
    * @param id - the StockItemId of the aggregate to delete
    */
   delete(id: StockItemId): Promise<void>;

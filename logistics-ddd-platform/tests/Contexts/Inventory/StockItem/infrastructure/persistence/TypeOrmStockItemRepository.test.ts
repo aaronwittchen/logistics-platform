@@ -9,7 +9,6 @@ import { StockItemEntity } from '@/Contexts/Inventory/StockItem/infrastructure/p
 import { PackageEntity } from '@/Contexts/Logistics/Package/infrastructure/persistence/PackageEntity';
 import { EventBus } from '@/Shared/domain/EventBus';
 import { DomainEvent } from '@/Shared/domain/DomainEvent';
-import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
 
 // Mock EventBus for testing
 class MockEventBus implements EventBus {
@@ -49,10 +48,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       database: '.data/test.sqlite',
       synchronize: true,
       logging: false,
-      entities: [
-        StockItemEntity,
-        PackageEntity,
-      ],
+      entities: [StockItemEntity, PackageEntity],
     });
 
     await dataSource.initialize();
@@ -78,7 +74,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
         // Use the repository's clear method or recreate it
         const stockItemRepo = dataSource.getRepository(StockItemEntity);
         await stockItemRepo.clear();
-        
+
         const packageRepo = dataSource.getRepository(PackageEntity);
         await packageRepo.clear();
       }
@@ -109,7 +105,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       await repository.save(stockItem);
@@ -127,7 +123,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Out of Stock Item'),
-        quantity: new Quantity(0)
+        quantity: new Quantity(0),
       });
 
       await repository.save(stockItem);
@@ -142,7 +138,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Bulk Item'),
-        quantity: new Quantity(1000000)
+        quantity: new Quantity(1000000),
       });
 
       await repository.save(stockItem);
@@ -158,7 +154,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from(name),
-        quantity: new Quantity(50)
+        quantity: new Quantity(50),
       });
 
       await repository.save(stockItem);
@@ -173,7 +169,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Event Test Item'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       await repository.save(stockItem);
@@ -192,7 +188,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('No Event Bus Item'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       await repositoryWithoutEventBus.save(stockItem);
@@ -207,7 +203,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Find Test Item'),
-        quantity: new Quantity(25)
+        quantity: new Quantity(25),
       });
 
       await repository.save(stockItem);
@@ -233,13 +229,13 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem1 = StockItem.add({
         id: id1,
         name: StockItemName.from('First Item'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       const stockItem2 = StockItem.add({
         id: id2,
         name: StockItemName.from('Second Item'),
-        quantity: new Quantity(20)
+        quantity: new Quantity(20),
       });
 
       await repository.save(stockItem1);
@@ -267,18 +263,18 @@ describe('TypeOrmStockItemRepository Integration', () => {
         StockItem.add({
           id: StockItemId.from('550e8400-e29b-41d4-a716-446655440000'),
           name: StockItemName.from('Item 1'),
-          quantity: new Quantity(10)
+          quantity: new Quantity(10),
         }),
         StockItem.add({
           id: StockItemId.from('660e8400-e29b-41d4-a716-446655440000'),
           name: StockItemName.from('Item 2'),
-          quantity: new Quantity(20)
+          quantity: new Quantity(20),
         }),
         StockItem.add({
           id: StockItemId.from('770e8400-e29b-41d4-a716-446655440000'),
           name: StockItemName.from('Item 3'),
-          quantity: new Quantity(30)
-        })
+          quantity: new Quantity(30),
+        }),
       ];
 
       for (const item of stockItems) {
@@ -299,7 +295,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Test Item'),
-        quantity: new Quantity(42)
+        quantity: new Quantity(42),
       });
 
       await repository.save(stockItem);
@@ -317,18 +313,18 @@ describe('TypeOrmStockItemRepository Integration', () => {
   describe('delete operation', () => {
     it('should delete existing stock item', async () => {
       const id = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      
+
       // Make sure we're starting with a clean state
       try {
         await repository.delete(id); // Delete if exists
       } catch (error) {
         // Ignore if it doesn't exist
       }
-      
+
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('To Be Deleted'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       await repository.save(stockItem);
@@ -349,17 +345,21 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const id1 = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
       const id2 = StockItemId.from('660e8400-e29b-41d4-a716-446655440000');
 
-      await repository.save(StockItem.add({
-        id: id1,
-        name: StockItemName.from('Item 1'),
-        quantity: new Quantity(10)
-      }));
+      await repository.save(
+        StockItem.add({
+          id: id1,
+          name: StockItemName.from('Item 1'),
+          quantity: new Quantity(10),
+        }),
+      );
 
-      await repository.save(StockItem.add({
-        id: id2,
-        name: StockItemName.from('Item 2'),
-        quantity: new Quantity(20)
-      }));
+      await repository.save(
+        StockItem.add({
+          id: id2,
+          name: StockItemName.from('Item 2'),
+          quantity: new Quantity(20),
+        }),
+      );
 
       // Verify both items exist
       let allItems = await repository.findAll();
@@ -380,14 +380,14 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const originalData = {
         id: '550e8400-e29b-41d4-a716-446655440000',
         name: 'Consistency Test Item',
-        quantity: 100
+        quantity: 100,
       };
 
       const id = StockItemId.from(originalData.id);
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from(originalData.name),
-        quantity: new Quantity(originalData.quantity)
+        quantity: new Quantity(originalData.quantity),
       });
 
       await repository.save(stockItem);
@@ -416,16 +416,18 @@ describe('TypeOrmStockItemRepository Integration', () => {
         { id: '660e8400-e29b-41d4-a716-446655440000', name: 'Concurrent Item 2', quantity: 20 },
         { id: '770e8400-e29b-41d4-a716-446655440000', name: 'Concurrent Item 3', quantity: 30 },
         { id: '880e8400-e29b-41d4-a716-446655440000', name: 'Concurrent Item 4', quantity: 40 },
-        { id: '990e8400-e29b-41d4-a716-446655440000', name: 'Concurrent Item 5', quantity: 50 }
+        { id: '990e8400-e29b-41d4-a716-446655440000', name: 'Concurrent Item 5', quantity: 50 },
       ];
 
       // Save all items concurrently
       const savePromises = items.map(item =>
-        repository.save(StockItem.add({
-          id: StockItemId.from(item.id),
-          name: StockItemName.from(item.name),
-          quantity: new Quantity(item.quantity)
-        }))
+        repository.save(
+          StockItem.add({
+            id: StockItemId.from(item.id),
+            name: StockItemName.from(item.name),
+            quantity: new Quantity(item.quantity),
+          }),
+        ),
       );
 
       await Promise.all(savePromises);
@@ -450,7 +452,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Min Values Item'),
-        quantity: new Quantity(0) // Minimum quantity
+        quantity: new Quantity(0), // Minimum quantity
       });
 
       await repository.save(stockItem);
@@ -465,7 +467,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Max Quantity Item'),
-        quantity: new Quantity(1000000000) // Maximum quantity
+        quantity: new Quantity(1000000000), // Maximum quantity
       });
 
       await repository.save(stockItem);
@@ -481,7 +483,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from(longName),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       await repository.save(stockItem);
@@ -492,17 +494,14 @@ describe('TypeOrmStockItemRepository Integration', () => {
     });
 
     it('should handle special UUID formats', async () => {
-      const edgeCaseUuids = [
-        '00000000-0000-4000-8000-000000000000',
-        'FFFFFFFF-FFFF-4FFF-BFFF-FFFFFFFFFFFF'
-      ];
+      const edgeCaseUuids = ['00000000-0000-4000-8000-000000000000', 'FFFFFFFF-FFFF-4FFF-BFFF-FFFFFFFFFFFF'];
 
       for (const uuid of edgeCaseUuids) {
         const id = StockItemId.from(uuid);
         const stockItem = StockItem.add({
           id,
           name: StockItemName.from('Edge Case UUID Item'),
-          quantity: new Quantity(10)
+          quantity: new Quantity(10),
         });
 
         await repository.save(stockItem);
@@ -515,7 +514,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
 
     it('should handle database errors gracefully', async () => {
       const errorRepository = new TypeOrmStockItemRepository(eventBus, dataSource);
-      
+
       // Mock the repository's save method to throw an error
       const originalSave = (errorRepository as any).repository.save;
       (errorRepository as any).repository.save = async () => {
@@ -526,11 +525,11 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Error Test Item'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       await expect(errorRepository.save(stockItem)).rejects.toThrow('Database connection failed');
-      
+
       // Restore original method
       (errorRepository as any).repository.save = originalSave;
     });
@@ -542,7 +541,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Event Publishing Test'),
-        quantity: new Quantity(25)
+        quantity: new Quantity(25),
       });
 
       await repository.save(stockItem);
@@ -573,7 +572,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Event Bus Error Test'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       // Should still save successfully even if event publishing fails
@@ -596,7 +595,7 @@ describe('TypeOrmStockItemRepository Integration', () => {
         const stockItem = StockItem.add({
           id,
           name: StockItemName.from(`Bulk Item ${i}`),
-          quantity: new Quantity(i * 10)
+          quantity: new Quantity(i * 10),
         });
         items.push(stockItem);
       }
@@ -627,18 +626,16 @@ describe('TypeOrmStockItemRepository Integration', () => {
         const stockItem = StockItem.add({
           id,
           name: StockItemName.from(`Rapid Item ${i}`),
-          quantity: new Quantity(i)
+          quantity: new Quantity(i),
         });
 
-        operations.push(
-          repository.save(stockItem).then(() => repository.find(id))
-        );
+        operations.push(repository.save(stockItem).then(() => repository.find(id)));
       }
 
       const results = await Promise.all(operations);
 
       // All find operations should return valid items
-      results.forEach((found, index) => {
+      results.forEach((found: StockItem | null, index: number) => {
         expect(found).toBeDefined();
         expect(found!.name.value).toBe(`Rapid Item ${index}`);
         expect(found!.quantity.value).toBe(index);

@@ -12,11 +12,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event).toBeDefined();
       expect(event.aggregateId).toBe(aggregateId);
@@ -35,7 +31,7 @@ describe('StockItemAdded', () => {
       const event = new StockItemAdded(
         { aggregateId, eventId: customEventId, occurredOn: customTimestamp },
         stockItemName,
-        stockQuantity
+        stockQuantity,
       );
 
       expect(event.eventId).toBe(customEventId);
@@ -50,11 +46,7 @@ describe('StockItemAdded', () => {
       const stockQuantity = new Quantity(10);
       const beforeCreation = new Date();
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       const afterCreation = new Date();
       expect(event.eventId).toBeDefined();
@@ -70,11 +62,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('Samsung Galaxy');
       const stockQuantity = new Quantity(5);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event.eventName()).toBe('inventory.stock_item.added');
     });
@@ -84,11 +72,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('MacBook Pro');
       const stockQuantity = new Quantity(3);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event.name).toBe('MacBook Pro');
     });
@@ -98,11 +82,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPad');
       const stockQuantity = new Quantity(20);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event.quantity).toBe(20);
     });
@@ -110,23 +90,13 @@ describe('StockItemAdded', () => {
     it('should handle different stock item names', () => {
       const aggregateId = StockItemId.random();
 
-      const testCases = [
-        'iPhone 15',
-        'Samsung Galaxy S24',
-        'MacBook Pro 16"',
-        'iPad Air',
-        'Apple Watch Series 9'
-      ];
+      const testCases = ['iPhone 15', 'Samsung Galaxy S24', 'MacBook Pro 16"', 'iPad Air', 'Apple Watch Series 9'];
 
       testCases.forEach(name => {
         const stockItemName = StockItemName.from(name);
         const stockQuantity = new Quantity(1);
 
-        const event = new StockItemAdded(
-          { aggregateId },
-          stockItemName,
-          stockQuantity
-        );
+        const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
         expect(event.name).toBe(name);
       });
@@ -141,11 +111,7 @@ describe('StockItemAdded', () => {
       quantities.forEach(quantity => {
         const stockQuantity = new Quantity(quantity);
 
-        const event = new StockItemAdded(
-          { aggregateId },
-          stockItemName,
-          stockQuantity
-        );
+        const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
         expect(event.quantity).toBe(quantity);
       });
@@ -158,11 +124,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       const payload = (event as any).toPayload();
       expect(payload).toEqual({
@@ -178,11 +140,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId, eventId, occurredOn },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId, eventId, occurredOn }, stockItemName, stockQuantity);
 
       const primitives = event.toPrimitives();
 
@@ -202,11 +160,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('Test Item');
       const stockQuantity = new Quantity(5);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       const primitives = event.toPrimitives();
 
@@ -221,11 +175,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('Test Item');
       const stockQuantity = new Quantity(1);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       const primitives = event.toPrimitives();
 
@@ -248,17 +198,9 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event1 = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event1 = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
-      const event2 = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event2 = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event1.equals(event2)).toBe(true);
     });
@@ -267,17 +209,9 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event1 = new StockItemAdded(
-        { aggregateId: StockItemId.random() },
-        stockItemName,
-        stockQuantity
-      );
+      const event1 = new StockItemAdded({ aggregateId: StockItemId.random() }, stockItemName, stockQuantity);
 
-      const event2 = new StockItemAdded(
-        { aggregateId: StockItemId.random() },
-        stockItemName,
-        stockQuantity
-      );
+      const event2 = new StockItemAdded({ aggregateId: StockItemId.random() }, stockItemName, stockQuantity);
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -286,17 +220,9 @@ describe('StockItemAdded', () => {
       const aggregateId = StockItemId.random();
       const stockQuantity = new Quantity(10);
 
-      const event1 = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        stockQuantity
-      );
+      const event1 = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), stockQuantity);
 
-      const event2 = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('Samsung Galaxy'),
-        stockQuantity
-      );
+      const event2 = new StockItemAdded({ aggregateId }, StockItemName.from('Samsung Galaxy'), stockQuantity);
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -305,17 +231,9 @@ describe('StockItemAdded', () => {
       const aggregateId = StockItemId.random();
       const stockItemName = StockItemName.from('iPhone 15');
 
-      const event1 = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        new Quantity(10)
-      );
+      const event1 = new StockItemAdded({ aggregateId }, stockItemName, new Quantity(10));
 
-      const event2 = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        new Quantity(20)
-      );
+      const event2 = new StockItemAdded({ aggregateId }, stockItemName, new Quantity(20));
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -325,11 +243,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event.equals(null as any)).toBe(false);
       expect(event.equals(undefined as any)).toBe(false);
@@ -340,11 +254,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event.equals(event)).toBe(true);
     });
@@ -356,11 +266,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       // Properties should be readonly (TypeScript level)
       expect(() => {
@@ -381,11 +287,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('iPhone 15');
       const stockQuantity = new Quantity(10);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       // Value objects should be frozen (from ValueObject)
       expect(Object.isFrozen(event.aggregateId.unwrap())).toBe(true);
@@ -405,17 +307,13 @@ describe('StockItemAdded', () => {
         'MacBook Pro 16" M3',
         'iPad Pro 12.9"',
         'Apple Watch Series 9 (45mm)',
-        'AirPods Pro (2nd generation)'
+        'AirPods Pro (2nd generation)',
       ];
 
       specialNames.forEach(name => {
         const stockItemName = StockItemName.from(name);
 
-        const event = new StockItemAdded(
-          { aggregateId },
-          stockItemName,
-          stockQuantity
-        );
+        const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
         expect(event.name).toBe(name);
       });
@@ -430,11 +328,7 @@ describe('StockItemAdded', () => {
       largeQuantities.forEach(quantity => {
         const stockQuantity = new Quantity(quantity);
 
-        const event = new StockItemAdded(
-          { aggregateId },
-          stockItemName,
-          stockQuantity
-        );
+        const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
         expect(event.quantity).toBe(quantity);
       });
@@ -448,11 +342,7 @@ describe('StockItemAdded', () => {
       const events = [];
       for (let i = 0; i < 10; i++) {
         const stockQuantity = new Quantity(i + 1);
-        const event = new StockItemAdded(
-          { aggregateId },
-          stockItemName,
-          stockQuantity
-        );
+        const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
         events.push(event);
       }
 
@@ -476,11 +366,7 @@ describe('StockItemAdded', () => {
       const stockQuantity = new Quantity(50);
 
       // Create event using domain objects
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       // Verify all properties
       expect(event.aggregateId).toBe(aggregateId);
@@ -500,11 +386,7 @@ describe('StockItemAdded', () => {
       const stockItemName = StockItemName.from('Zero Stock Item');
       const stockQuantity = new Quantity(0);
 
-      const event = new StockItemAdded(
-        { aggregateId },
-        stockItemName,
-        stockQuantity
-      );
+      const event = new StockItemAdded({ aggregateId }, stockItemName, stockQuantity);
 
       expect(event.quantity).toBe(0);
       expect(event.name).toBe('Zero Stock Item');
@@ -546,17 +428,12 @@ describe('StockItemAdded', () => {
         // Missing required fields
       };
 
-      expect(() => StockItemAdded.fromPrimitives(invalidPrimitives))
-        .toThrow('Missing name in event attributes');
+      expect(() => StockItemAdded.fromPrimitives(invalidPrimitives)).toThrow('Missing name in event attributes');
     });
 
     it('should handle event version in serialization', () => {
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       const primitives = event.toPrimitives();
 

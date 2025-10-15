@@ -1,10 +1,10 @@
-import type { EventBus } from "@/Shared/domain/EventBus";
-import { AddStockCommand } from "./AddStockCommand";
-import type { StockItemRepository } from "../../domain/StockItemRepository";
-import { StockItem } from "../../domain/StockItem";
-import { StockItemId } from "../../domain/StockItemId";
-import { StockItemName } from "../../domain/StockItemName";
-import { Quantity } from "../../domain/Quantity";
+import type { EventBus } from '@/Shared/domain/EventBus';
+import { AddStockCommand } from './AddStockCommand';
+import type { StockItemRepository } from '@/Contexts/Inventory/StockItem/domain/StockItemRepository';
+import { StockItem } from '@/Contexts/Inventory/StockItem/domain/StockItem';
+import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
+import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
+import { Quantity } from '@/Contexts/Inventory/StockItem/domain/Quantity';
 
 /**
  * AddStockCommandHandler
@@ -20,7 +20,7 @@ import { Quantity } from "../../domain/Quantity";
 export class AddStockCommandHandler {
   constructor(
     private readonly repository: StockItemRepository,
-    private readonly eventBus?: EventBus
+    private readonly eventBus?: EventBus,
   ) {}
 
   /**

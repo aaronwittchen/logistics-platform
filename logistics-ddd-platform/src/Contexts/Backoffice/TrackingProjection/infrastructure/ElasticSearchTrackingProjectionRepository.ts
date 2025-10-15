@@ -3,9 +3,7 @@ import { TrackingView } from '../domain/TrackingView';
 import { TrackingProjectionRepository } from '../domain/TrackingProjectionRepository';
 import { log } from '@/utils/log';
 
-export class ElasticSearchTrackingProjectionRepository
-  implements TrackingProjectionRepository
-{
+export class ElasticSearchTrackingProjectionRepository implements TrackingProjectionRepository {
   private readonly indexName = 'tracking_projections';
 
   constructor(private readonly client: ElasticSearchClient) {
@@ -41,15 +39,30 @@ export class ElasticSearchTrackingProjectionRepository
     try {
       const result = await this.client.get(this.indexName, id);
       if (result) {
+        const trackingData = result as unknown as TrackingView;
         return {
-          ...result,
-          createdAt: new Date(result.createdAt),
-          updatedAt: new Date(result.updatedAt),
+          id: trackingData.id,
+          stockItemId: trackingData.stockItemId,
+          stockItemName: trackingData.stockItemName,
+          reservedQuantity: trackingData.reservedQuantity,
+          reservationId: trackingData.reservationId,
+          status: trackingData.status,
+          createdAt: new Date(trackingData.createdAt),
+          updatedAt: new Date(trackingData.updatedAt),
         };
       }
       return null;
-    } catch (error: any) {
-      if (error.meta?.statusCode === 404) {
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'meta' in error &&
+        typeof error.meta === 'object' &&
+        error.meta !== null &&
+        'statusCode' in error.meta &&
+        typeof error.meta.statusCode === 'number' &&
+        error.meta.statusCode === 404
+      ) {
         return null;
       }
       throw error;
@@ -62,9 +75,14 @@ export class ElasticSearchTrackingProjectionRepository
     });
 
     return results.map(result => ({
-      ...result,
-      createdAt: new Date(result.createdAt),
-      updatedAt: new Date(result.updatedAt),
+      id: result.id as string,
+      stockItemId: result.stockItemId as string,
+      stockItemName: result.stockItemName as string,
+      reservedQuantity: result.reservedQuantity as number,
+      reservationId: result.reservationId as string,
+      status: result.status as TrackingView['status'],
+      createdAt: new Date(result.createdAt as string),
+      updatedAt: new Date(result.updatedAt as string),
     }));
   }
 
@@ -80,8 +98,17 @@ export class ElasticSearchTrackingProjectionRepository
     try {
       await this.client.delete(this.indexName, id);
       log.ok(`Deleted tracking projection: ${id}`);
-    } catch (error: any) {
-      if (error.meta?.statusCode === 404) {
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'meta' in error &&
+        typeof error.meta === 'object' &&
+        error.meta !== null &&
+        'statusCode' in error.meta &&
+        typeof error.meta.statusCode === 'number' &&
+        error.meta.statusCode === 404
+      ) {
         log.warn(`Tracking projection not found for deletion: ${id}`);
         return;
       }
@@ -95,9 +122,14 @@ export class ElasticSearchTrackingProjectionRepository
     });
 
     return results.map(result => ({
-      ...result,
-      createdAt: new Date(result.createdAt),
-      updatedAt: new Date(result.updatedAt),
+      id: result.id as string,
+      stockItemId: result.stockItemId as string,
+      stockItemName: result.stockItemName as string,
+      reservedQuantity: result.reservedQuantity as number,
+      reservationId: result.reservationId as string,
+      status: result.status as TrackingView['status'],
+      createdAt: new Date(result.createdAt as string),
+      updatedAt: new Date(result.updatedAt as string),
     }));
   }
 
@@ -109,9 +141,14 @@ export class ElasticSearchTrackingProjectionRepository
     if (results.length > 0) {
       const result = results[0];
       return {
-        ...result,
-        createdAt: new Date(result.createdAt),
-        updatedAt: new Date(result.updatedAt),
+        id: result.id as string,
+        stockItemId: result.stockItemId as string,
+        stockItemName: result.stockItemName as string,
+        reservedQuantity: result.reservedQuantity as number,
+        reservationId: result.reservationId as string,
+        status: result.status as TrackingView['status'],
+        createdAt: new Date(result.createdAt as string),
+        updatedAt: new Date(result.updatedAt as string),
       };
     }
     return null;
@@ -123,9 +160,14 @@ export class ElasticSearchTrackingProjectionRepository
     });
 
     return results.map(result => ({
-      ...result,
-      createdAt: new Date(result.createdAt),
-      updatedAt: new Date(result.updatedAt),
+      id: result.id as string,
+      stockItemId: result.stockItemId as string,
+      stockItemName: result.stockItemName as string,
+      reservedQuantity: result.reservedQuantity as number,
+      reservationId: result.reservationId as string,
+      status: result.status as TrackingView['status'],
+      createdAt: new Date(result.createdAt as string),
+      updatedAt: new Date(result.updatedAt as string),
     }));
   }
 

@@ -1,4 +1,3 @@
-
 import { StockItem } from '@/Contexts/Inventory/StockItem/domain/StockItem';
 import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
 import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
@@ -110,7 +109,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       stockItem.reserve(new Quantity(25), 'reservation-123');
@@ -123,7 +122,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       // Clear the creation event
@@ -147,7 +146,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       stockItem.reserve(new Quantity(10), 'reservation-1');
@@ -170,7 +169,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(5)
+        quantity: new Quantity(5),
       });
 
       expect(() => {
@@ -186,7 +185,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(5)
+        quantity: new Quantity(5),
       });
 
       // Clear the creation event
@@ -206,7 +205,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(50)
+        quantity: new Quantity(50),
       });
 
       stockItem.reserve(new Quantity(50), 'reservation-full');
@@ -226,7 +225,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('iPhone 15'),
-        quantity: new Quantity(200) // Increased from 100 to 200 to accommodate all reservations
+        quantity: new Quantity(200), // Increased from 100 to 200 to accommodate all reservations
       });
 
       const reservationIds = [
@@ -234,7 +233,7 @@ describe('StockItem', () => {
         'reservation-002',
         'reservation-003',
         'reservation-abc-123',
-        'reservation_xyz_456'
+        'reservation_xyz_456',
       ];
 
       reservationIds.forEach((reservationId, index) => {
@@ -267,7 +266,7 @@ describe('StockItem', () => {
       expect(primitives).toEqual({
         id: '550e8400-e29b-41d4-a716-446655440000',
         name: 'iPhone 15 Pro',
-        quantity: 100
+        quantity: 100,
       });
     });
 
@@ -316,7 +315,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Test Item'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       stockItem.pullDomainEvents(); // Clear creation event
@@ -338,7 +337,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Single Item'),
-        quantity: new Quantity(1)
+        quantity: new Quantity(1),
       });
 
       stockItem.reserve(new Quantity(1), 'reservation-single');
@@ -351,7 +350,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Concurrent Test Item'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       // Simulate multiple rapid reservations
@@ -360,7 +359,7 @@ describe('StockItem', () => {
         { quantity: 15, id: 'res-2' },
         { quantity: 5, id: 'res-3' },
         { quantity: 20, id: 'res-4' },
-        { quantity: 25, id: 'res-5' }
+        { quantity: 25, id: 'res-5' },
       ];
 
       reservations.forEach(({ quantity, id: reservationId }) => {
@@ -385,7 +384,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Zero Stock Item'),
-        quantity: new Quantity(0)
+        quantity: new Quantity(0),
       });
 
       expect(() => {
@@ -401,7 +400,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Test Item'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       const largeReservationId = 'reservation-' + 'a'.repeat(1000);
@@ -421,7 +420,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Consistency Test Item'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       const initialQuantity = stockItem.quantity.value;
@@ -443,7 +442,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Limited Stock Item'),
-        quantity: new Quantity(10)
+        quantity: new Quantity(10),
       });
 
       // Should succeed
@@ -470,7 +469,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Integration Test Item'),
-        quantity: new Quantity(50)
+        quantity: new Quantity(50),
       });
 
       // Clear creation event
@@ -498,7 +497,7 @@ describe('StockItem', () => {
       const stockItem = StockItem.add({
         id,
         name: StockItemName.from('Full Cycle Item'),
-        quantity: new Quantity(100)
+        quantity: new Quantity(100),
       });
 
       // Should have creation event

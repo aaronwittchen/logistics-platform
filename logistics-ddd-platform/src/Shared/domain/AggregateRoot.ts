@@ -1,10 +1,10 @@
-import { DomainEvent } from "./DomainEvent";
+import { DomainEvent } from './DomainEvent';
 
 /**
  * AggregateRoot
  *
  * Base class for all aggregate roots in a DDD (Domain-Driven Design) system.
- * 
+ *
  * An aggregate root:
  * - Is the entry point for a cluster of related entities and value objects
  * - Controls consistency and invariants within the aggregate

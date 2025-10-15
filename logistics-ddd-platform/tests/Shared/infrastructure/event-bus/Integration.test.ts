@@ -51,7 +51,6 @@ describe('Event-Driven Architecture Integration', () => {
 
       await eventBus.start();
       await consumer.start([subscriber]);
-
     } catch (error) {
       console.warn('RabbitMQ not available for integration tests:', error);
       rabbitMQAvailable = false;
@@ -79,11 +78,7 @@ describe('Event-Driven Architecture Integration', () => {
       }
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('iPhone 15'),
-        Quantity.from(100)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('iPhone 15'), Quantity.from(100));
 
       // Publish event
       await eventBus.publish([event]);
@@ -108,12 +103,12 @@ describe('Event-Driven Architecture Integration', () => {
         new StockItemAdded(
           { aggregateId: StockItemId.from('550e8400-e29b-41d4-a716-446655440000') },
           StockItemName.from('iPhone 15'),
-          Quantity.from(100)
+          Quantity.from(100),
         ),
         new StockItemAdded(
           { aggregateId: StockItemId.from('660e8400-e29b-41d4-a716-446655440000') },
           StockItemName.from('Samsung Galaxy'),
-          Quantity.from(50)
+          Quantity.from(50),
         ),
       ];
 
@@ -139,12 +134,12 @@ describe('Event-Driven Architecture Integration', () => {
         new StockItemAdded(
           { aggregateId: StockItemId.from('550e8400-e29b-41d4-a716-446655440000') },
           StockItemName.from('First Item'),
-          Quantity.from(10)
+          Quantity.from(10),
         ),
         new StockItemAdded(
           { aggregateId: StockItemId.from('660e8400-e29b-41d4-a716-446655440000') },
           StockItemName.from('Second Item'),
-          Quantity.from(20)
+          Quantity.from(20),
         ),
       ];
 
@@ -179,11 +174,7 @@ describe('Event-Driven Architecture Integration', () => {
       const failingEventBus = new RabbitMQEventBus(failingConnection);
 
       const aggregateId = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
-      const event = new StockItemAdded(
-        { aggregateId },
-        StockItemName.from('Test Item'),
-        Quantity.from(10)
-      );
+      const event = new StockItemAdded({ aggregateId }, StockItemName.from('Test Item'), Quantity.from(10));
 
       // Should handle connection failure
       await expect(failingEventBus.publish([event])).rejects.toThrow();

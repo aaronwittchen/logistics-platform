@@ -1,5 +1,5 @@
-import { EventBus, DomainEventClass, DomainEventHandler } from '../../domain/EventBus';
-import { DomainEvent } from '../../domain/DomainEvent';
+import { EventBus, DomainEventClass, DomainEventHandler } from '@/Shared/domain/EventBus';
+import { DomainEvent } from '@/Shared/domain/DomainEvent';
 import { RabbitMQConnection } from './RabbitMQConnection';
 import { log } from '@/utils/log';
 
@@ -9,14 +9,19 @@ interface PublishOptions {
   deadLetterExchange?: string;
 }
 
+// ... existing code ...
+
 export class RabbitMQEventBus implements EventBus {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly subscriptions = new Map<string, Set<DomainEventHandler<any>>>();
   private readonly deadLetterExchange: string;
+
+  // ... existing code ...
 
   constructor(
     private readonly connection: RabbitMQConnection,
     private readonly exchangeName: string = 'domain_events',
-    private readonly options: PublishOptions = {}
+    private readonly options: PublishOptions = {},
   ) {
     this.deadLetterExchange = options.deadLetterExchange || `${exchangeName}.dead-letter`;
   }
@@ -118,12 +123,9 @@ export class RabbitMQEventBus implements EventBus {
         },
       });
 
-      channel.publish(
-        this.deadLetterExchange,
-        `${event.eventName()}.failed`,
-        Buffer.from(deadLetterMessage),
-        { persistent: true }
-      );
+      channel.publish(this.deadLetterExchange, `${event.eventName()}.failed`, Buffer.from(deadLetterMessage), {
+        persistent: true,
+      });
     } catch (dlqError) {
       log.err(`Failed to send event to dead letter exchange: ${dlqError}`);
       // Throw the original error if DLQ publishing also fails
@@ -135,10 +137,7 @@ export class RabbitMQEventBus implements EventBus {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  subscribe<T extends DomainEvent>(
-    event: DomainEventClass<T>,
-    handler: DomainEventHandler<T>
-  ): void {
+  subscribe<T extends DomainEvent>(event: DomainEventClass<T>, handler: DomainEventHandler<T>): void {
     const eventName = event.prototype.eventName();
 
     if (!this.subscriptions.has(eventName)) {
@@ -150,10 +149,7 @@ export class RabbitMQEventBus implements EventBus {
     log.ok(`Subscribed to event: ${eventName}`);
   }
 
-  unsubscribe<T extends DomainEvent>(
-    event: DomainEventClass<T>,
-    handler: DomainEventHandler<T>
-  ): void {
+  unsubscribe<T extends DomainEvent>(event: DomainEventClass<T>, handler: DomainEventHandler<T>): void {
     const eventName = event.prototype.eventName();
     const handlers = this.subscriptions.get(eventName);
 

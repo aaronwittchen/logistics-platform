@@ -9,8 +9,8 @@ import { Quantity } from '../Quantity';
  * Defines the data that will be serialized when the event is published.
  */
 export interface StockItemReservedPayload {
-  stockItemId: string;           // stock item ID
-  reservedQuantity: number;     // reserved quantity
+  stockItemId: string; // stock item ID
+  reservedQuantity: number; // reserved quantity
   reservationIdentifier: string; // unique reservation identifier
 }
 
@@ -40,7 +40,7 @@ export class StockItemReserved extends DomainEvent<StockItemReservedPayload> {
     params: { aggregateId: StockItemId; eventId?: Uuid; occurredOn?: Date },
     private readonly id: StockItemId,
     private readonly quantity: Quantity,
-    private readonly reservationId: string
+    private readonly reservationId: string,
   ) {
     super(params); // call base DomainEvent constructor
   }
@@ -84,7 +84,7 @@ export class StockItemReserved extends DomainEvent<StockItemReservedPayload> {
   static fromPrimitives(primitives: DomainEventPrimitives): StockItemReserved {
     // Handle both direct payload format and nested attributes format
     const payload = (primitives as DomainEventPrimitives & { attributes?: unknown }).attributes || primitives;
-    
+
     // Map RabbitMQ message structure to DomainEventPrimitives structure
     const eventPrimitives: DomainEventPrimitives = {
       aggregateId: primitives.aggregateId,
@@ -92,18 +92,18 @@ export class StockItemReserved extends DomainEvent<StockItemReservedPayload> {
       occurredOn: primitives.occurredOn,
       eventName: (primitives as DomainEventPrimitives & { type?: string }).type || primitives.eventName,
       eventVersion: (payload as DomainEventPrimitives & { eventVersion?: string }).eventVersion,
-      ...payload
+      ...payload,
     };
-    
+
     return new StockItemReserved(
       {
         aggregateId: StockItemId.from(eventPrimitives.aggregateId),
         eventId: Uuid.from(eventPrimitives.eventId),
-        occurredOn: new Date(eventPrimitives.occurredOn)
+        occurredOn: new Date(eventPrimitives.occurredOn),
       },
       StockItemId.from(eventPrimitives.stockItemId as string),
       Quantity.from(eventPrimitives.reservedQuantity as number),
-      eventPrimitives.reservationIdentifier as string
+      eventPrimitives.reservationIdentifier as string,
     );
   }
 }

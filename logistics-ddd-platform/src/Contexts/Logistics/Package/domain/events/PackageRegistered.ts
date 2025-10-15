@@ -12,6 +12,7 @@ import { Uuid } from '@/Shared/domain/Uuid';
  * - Enable tracking of package creation across contexts
  */
 export class PackageRegistered extends DomainEvent {
+  public readonly id: string; // Add this property declaration
   /** Static event name for this domain event */
   static EVENT_NAME = 'logistics.package.registered';
 
@@ -25,17 +26,12 @@ export class PackageRegistered extends DomainEvent {
    * @param occurredOn - optional timestamp (defaults to current time)
    */
   constructor(
-    public readonly id: string,
+    params: { aggregateId: Uuid; eventId?: Uuid; occurredOn?: Date },
     public readonly trackingNumber: string,
     public readonly reservationId: string,
-    eventId?: string,
-    occurredOn?: Date
   ) {
-    super({
-      aggregateId: Uuid.from(id),
-      eventId: eventId ? Uuid.from(eventId) : undefined,
-      occurredOn
-    });
+    super(params);
+    this.id = params.aggregateId.value; // Add this property
   }
 
   /** Returns the event name */
@@ -74,25 +70,31 @@ export class PackageRegistered extends DomainEvent {
    * @returns new PackageRegistered instance
    */
   static fromPrimitives(primitives: DomainEventPrimitives): PackageRegistered {
-    // Handle both direct payload format and nested attributes format
-    const payload = (primitives as any).attributes || primitives;
-    
+    // Handle different possible message formats more safely
+    const payload =
+      'attributes' in primitives
+        ? (primitives as DomainEventPrimitives & { attributes: Record<string, unknown> }).attributes
+        : primitives;
+
     // Map RabbitMQ message structure to DomainEventPrimitives structure
     const eventPrimitives: DomainEventPrimitives = {
       aggregateId: primitives.aggregateId,
-      eventId: (primitives as any).id || primitives.eventId,
+      eventId: 'id' in primitives ? (primitives as DomainEventPrimitives & { id: string }).id : primitives.eventId,
       occurredOn: primitives.occurredOn,
-      eventName: (primitives as any).type || primitives.eventName,
+      eventName:
+        'type' in primitives ? (primitives as DomainEventPrimitives & { type: string }).type : primitives.eventName,
       eventVersion: payload.eventVersion,
-      ...payload
+      ...payload,
     };
-    
+
     return new PackageRegistered(
-      eventPrimitives.id as string,
+      {
+        aggregateId: Uuid.from(eventPrimitives.id as string),
+        eventId: eventPrimitives.eventId ? Uuid.from(eventPrimitives.eventId) : undefined,
+        occurredOn: new Date(eventPrimitives.occurredOn),
+      },
       eventPrimitives.trackingNumber as string,
       eventPrimitives.reservationId as string,
-      eventPrimitives.eventId,
-      new Date(eventPrimitives.occurredOn)
     );
   }
 }

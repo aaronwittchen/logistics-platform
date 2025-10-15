@@ -21,19 +21,19 @@ class MockSubscriber {
 class MockConsumerConnection {
   private channel?: Channel;
   private messageHandlers: any[] = [];
-  
+
   // Add missing properties from RabbitMQConnection
   public isConnecting = false;
   public reconnectAttempts = 0;
   public maxReconnectAttempts = 10;
   public reconnectDelay = 1000;
-  
+
   // Add missing config property
   public config = {
     hostname: 'localhost',
     port: 5672,
     username: 'guest',
-    password: 'guest'
+    password: 'guest',
   };
 
   constructor(private shouldFail: boolean = false) {}
@@ -251,7 +251,7 @@ describe('RabbitMQConsumer', () => {
     it('should validate event primitives before deserialization', async () => {
       // Mock the fromPrimitives method instead of validatePrimitives
       const originalFromPrimitives = StockItemAdded.fromPrimitives;
-      StockItemAdded.fromPrimitives = jest.fn((primitives) => {
+      StockItemAdded.fromPrimitives = jest.fn(primitives => {
         if (!(primitives as any).attributes?.name) {
           throw new Error('Missing name in event attributes');
         }

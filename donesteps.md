@@ -26,11 +26,9 @@ curl -X PUT http://localhost:3000/stock-items/550e8400-e29b-41d4-a716-4466554400
 curl http://localhost:3001/tracking/order-12345
 ```
 
-
-
 ### 31.7 Test Cross-Context Flow
 
-```bash
+````bash
 # Terminal 1: Inventory API
 npm run dev
 
@@ -86,14 +84,7 @@ curl -X PUT http://localhost:3000/stock-items/550e8400-e29b-41d4-a716-4466554400
 
 # 3. Query tracking (should show "registered" status)
 curl http://localhost:3001/tracking/order-final-test
-```
-
-
-
-
-
-
-
+````
 
 ### 35.6 Deploy Applications
 
@@ -115,10 +106,6 @@ kubectl wait --for=condition=ready pod -l app=inventory-api -n logistics-platfor
 # Check status
 kubectl get pods -n logistics-platform
 ```
-
-
-
-
 
 ### 36.4 Test Health Checks
 

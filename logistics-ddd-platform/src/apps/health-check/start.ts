@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { HealthCheckApp } from './HealthCheckApp';
-import { AppDataSource } from '../../Shared/infrastructure/persistence/TypeOrmConfig';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
 import { log } from '@/utils/log';
 
 async function start() {
@@ -30,7 +30,6 @@ async function start() {
       await app.close();
       process.exit(0);
     });
-
   } catch (error) {
     log.err(`Failed to start health check: ${error}`);
     process.exit(1);

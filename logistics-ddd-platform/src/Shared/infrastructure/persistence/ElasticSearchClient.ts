@@ -1,6 +1,17 @@
 import { Client } from '@elastic/elasticsearch';
 import { log } from '@/utils/log';
 
+// Type definitions for Elasticsearch operations
+interface IndexMappings {
+  properties: Record<
+    string,
+    {
+      type: string;
+      [key: string]: unknown;
+    }
+  >;
+}
+
 export class ElasticSearchClient {
   private client: Client;
 
@@ -10,19 +21,19 @@ export class ElasticSearchClient {
     });
   }
 
-  async createIndex(index: string, mappings: any): Promise<void> {
+  async createIndex(index: string, mappings: IndexMappings): Promise<void> {
     const exists = await this.client.indices.exists({ index });
 
     if (!exists) {
       await this.client.indices.create({
         index,
-        body: { mappings },
+        body: mappings, // Changed from { mappings } to mappings
       });
       log.ok(`Created index: ${index}`);
     }
   }
 
-  async index(index: string, id: string, document: any): Promise<void> {
+  async index<T extends Record<string, unknown>>(index: string, id: string, document: T): Promise<void> {
     await this.client.index({
       index,
       id,
@@ -31,41 +42,47 @@ export class ElasticSearchClient {
     });
   }
 
-  async get(index: string, id: string): Promise<any> {
+  async get<T extends Record<string, unknown>>(index: string, id: string): Promise<T | null> {
     try {
       const result = await this.client.get({
         index,
         id,
       });
-      return result._source;
-    } catch (error: any) {
-      if (error.statusCode === 404) {
+      return result._source as T;
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'statusCode' in error && error.statusCode === 404) {
         return null;
       }
       throw error;
     }
   }
 
-  async search(index: string, query: any): Promise<any[]> {
+  async search<T extends Record<string, unknown>>(index: string, query: Record<string, unknown>): Promise<T[]> {
     const result = await this.client.search({
       index,
-      body: { query },
+      body: query, // Remove 'as any' cast
     });
-    return result.hits.hits.map((hit: any) => hit._source);
+    return result.hits.hits.map(hit => hit._source as T);
   }
 
-  async update(index: string, id: string, document: any): Promise<void> {
+  async update<T extends Record<string, unknown>>(
+    index: string,
+    id: string,
+    document: Record<string, unknown>,
+  ): Promise<void> {
     try {
       await this.client.update({
         index,
         id,
-        body: { doc: document },
+        body: {
+          doc: document,
+        } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
         refresh: 'true',
       });
-    } catch (error: any) {
-      if (error.statusCode === 404) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'statusCode' in error && error.statusCode === 404) {
         // Document doesn't exist, create it instead
-        await this.index(index, id, document);
+        await this.index(index, id, document as T);
         return;
       }
       throw error;
@@ -79,8 +96,8 @@ export class ElasticSearchClient {
         id,
         refresh: 'true',
       });
-    } catch (error: any) {
-      if (error.statusCode === 404) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'statusCode' in error && error.statusCode === 404) {
         // Document doesn't exist, nothing to delete
         return;
       }
@@ -88,11 +105,11 @@ export class ElasticSearchClient {
     }
   }
 
-  async bulkIndex(index: string, documents: Array<{ id: string; document: any }>): Promise<void> {
-    const body = documents.flatMap(({ id, document }) => [
-      { index: { _index: index, _id: id } },
-      document,
-    ]);
+  async bulkIndex<T extends Record<string, unknown>>(
+    index: string,
+    documents: Array<{ id: string; document: T }>,
+  ): Promise<void> {
+    const body = documents.flatMap(({ id, document }) => [{ index: { _index: index, _id: id } }, document]);
 
     await this.client.bulk({
       body,

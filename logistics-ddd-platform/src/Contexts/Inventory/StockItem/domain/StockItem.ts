@@ -1,9 +1,9 @@
-import { AggregateRoot } from "@/Shared/domain/AggregateRoot";
-import { StockItemId } from "./StockItemId";
-import { StockItemName } from "./StockItemName";
-import { Quantity } from "./Quantity";
-import { StockItemAdded } from "./events/StockItemAdded";
-import { StockItemReserved } from "./events/StockItemReserved";
+import { AggregateRoot } from '@/Shared/domain/AggregateRoot';
+import { StockItemId } from './StockItemId';
+import { StockItemName } from './StockItemName';
+import { Quantity } from './Quantity';
+import { StockItemAdded } from './events/StockItemAdded';
+import { StockItemReserved } from './events/StockItemReserved';
 
 /**
  * Interface representing the primitive (serializable) shape of a StockItem.
@@ -32,7 +32,7 @@ export class StockItem extends AggregateRoot {
   private constructor(
     private readonly _id: StockItemId,
     private _name: StockItemName,
-    private _quantity: Quantity
+    private _quantity: Quantity,
   ) {
     super(); // call AggregateRoot constructor
   }
@@ -61,14 +61,7 @@ export class StockItem extends AggregateRoot {
 
     this._quantity = this._quantity.subtract(quantity);
 
-    this.record(
-      new StockItemReserved(
-        { aggregateId: this._id },
-        this._id,
-        quantity,
-        reservationId
-      )
-    );
+    this.record(new StockItemReserved({ aggregateId: this._id }, this._id, quantity, reservationId));
   }
 
   /** Getter for the StockItem ID */

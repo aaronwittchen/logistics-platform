@@ -5,7 +5,7 @@ describe('StockItemId', () => {
   describe('static random() method', () => {
     it('should create a random stock item id', () => {
       const id = StockItemId.random();
-      
+
       expect(id).toBeDefined();
       expect(id).toBeInstanceOf(StockItemId);
       expect(id).toBeInstanceOf(Uuid); // Should also be a Uuid
@@ -15,7 +15,7 @@ describe('StockItemId', () => {
     it('should generate unique IDs on multiple calls', () => {
       const id1 = StockItemId.random();
       const id2 = StockItemId.random();
-      
+
       expect(id1.value).not.toBe(id2.value);
       expect(id1.equals(id2)).toBe(false);
     });
@@ -23,9 +23,9 @@ describe('StockItemId', () => {
     it('should generate valid UUID v4 format', () => {
       const id = StockItemId.random();
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      
+
       expect(id.value).toMatch(uuidRegex);
-      
+
       // Check version (4th character of 3rd group should be '4')
       const versionChar = id.value.charAt(14);
       expect(versionChar).toBe('4');
@@ -33,14 +33,14 @@ describe('StockItemId', () => {
 
     it('should generate IDs with valid variants (8, 9, a, b)', () => {
       const variants = new Set<string>();
-      
+
       // Generate multiple IDs to check variants
       for (let i = 0; i < 100; i++) {
         const id = StockItemId.random();
         const variantChar = id.value.charAt(19);
         variants.add(variantChar);
       }
-      
+
       // Should only have valid variant characters
       expect(variants.has('8') || variants.has('9') || variants.has('a') || variants.has('b')).toBe(true);
     });
@@ -50,7 +50,7 @@ describe('StockItemId', () => {
     it('should create StockItemId from valid UUID string', () => {
       const validUuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(validUuid);
-      
+
       expect(id).toBeDefined();
       expect(id).toBeInstanceOf(StockItemId);
       expect(id.value).toBe(validUuid);
@@ -72,7 +72,7 @@ describe('StockItemId', () => {
     it('should accept UUIDs with different cases', () => {
       const lowerCaseUuid = '550e8400-e29b-41d4-a716-446655440000';
       const upperCaseUuid = '550E8400-E29B-41D4-A716-446655440000';
-      
+
       expect(() => StockItemId.from(lowerCaseUuid)).not.toThrow();
       expect(() => StockItemId.from(upperCaseUuid)).not.toThrow();
     });
@@ -106,14 +106,14 @@ describe('StockItemId', () => {
   describe('type safety and instanceof checks', () => {
     it('should be instance of both StockItemId and Uuid', () => {
       const id = StockItemId.random();
-      
+
       expect(id).toBeInstanceOf(StockItemId);
       expect(id).toBeInstanceOf(Uuid);
     });
 
     it('should not be instance of other classes', () => {
       const id = StockItemId.random();
-      
+
       expect(id).not.toBeInstanceOf(String);
       expect(id).not.toBeInstanceOf(Number);
       expect(id).not.toBeInstanceOf(Date);
@@ -125,14 +125,14 @@ describe('StockItemId', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const id1 = StockItemId.from(uuid);
       const id2 = StockItemId.from(uuid);
-      
+
       expect(id1.equals(id2)).toBe(true);
     });
 
     it('should not be equal to StockItemId with different value', () => {
       const id1 = StockItemId.from('550e8400-e29b-41d4-a716-446655440000');
       const id2 = StockItemId.from('660e8400-e29b-41d4-a716-446655440000');
-      
+
       expect(id1.equals(id2)).toBe(false);
     });
 
@@ -140,7 +140,7 @@ describe('StockItemId', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const stockItemId = StockItemId.from(uuid);
       const regularUuid = new Uuid(uuid);
-      
+
       // They have the same value but are different types
       expect(stockItemId.equals(regularUuid as any)).toBe(false);
       expect(stockItemId.value).toBe(regularUuid.value);
@@ -148,14 +148,14 @@ describe('StockItemId', () => {
 
     it('should not be equal to null or undefined', () => {
       const id = StockItemId.random();
-      
+
       expect(id.equals(null as any)).toBe(false);
       expect(id.equals(undefined as any)).toBe(false);
     });
 
     it('should be equal to itself', () => {
       const id = StockItemId.random();
-      
+
       expect(id.equals(id)).toBe(true);
     });
   });
@@ -164,7 +164,7 @@ describe('StockItemId', () => {
     it('should serialize to JSON correctly', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(uuid);
-      
+
       const json = id.toJSON();
       expect(json).toEqual({ value: uuid });
     });
@@ -172,7 +172,7 @@ describe('StockItemId', () => {
     it('should stringify correctly', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(uuid);
-      
+
       const str = JSON.stringify(id);
       expect(str).toBe('{"value":"550e8400-e29b-41d4-a716-446655440000"}');
     });
@@ -180,7 +180,7 @@ describe('StockItemId', () => {
     it('should unwrap correctly', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(uuid);
-      
+
       const unwrapped = id.unwrap();
       expect(unwrapped).toEqual({ value: uuid });
     });
@@ -191,7 +191,7 @@ describe('StockItemId', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(uuid);
       const unwrapped = id.unwrap();
-      
+
       expect(Object.isFrozen(unwrapped)).toBe(true);
       expect(Object.isFrozen(unwrapped.value)).toBe(true);
     });
@@ -201,7 +201,7 @@ describe('StockItemId', () => {
     it('should return the correct UUID value', () => {
       const testUuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(testUuid);
-      
+
       expect(id.value).toBe(testUuid);
       expect(typeof id.value).toBe('string');
       expect(id.value.length).toBe(36); // UUID v4 length with hyphens
@@ -211,7 +211,7 @@ describe('StockItemId', () => {
       const id = StockItemId.random();
       const value1 = id.value;
       const value2 = id.value;
-      
+
       expect(value1).toBe(value2);
     });
   });
@@ -223,7 +223,7 @@ describe('StockItemId', () => {
         '00000000-0000-4000-8000-000000000000', // all zeros except version/variant
         'FFFFFFFF-FFFF-4FFF-BFFF-FFFFFFFFFFFF', // all F's except version/variant
       ];
-      
+
       edgeCaseUuids.forEach(uuid => {
         expect(() => StockItemId.from(uuid)).not.toThrow();
       });
@@ -233,7 +233,7 @@ describe('StockItemId', () => {
       // Create a StockItemId from a Uuid value
       const uuid = Uuid.random();
       const stockItemId = StockItemId.from(uuid.value);
-      
+
       expect(stockItemId.value).toBe(uuid.value);
       expect(stockItemId).toBeInstanceOf(StockItemId);
       expect(stockItemId).toBeInstanceOf(Uuid);
@@ -241,13 +241,13 @@ describe('StockItemId', () => {
 
     it('should handle large numbers of random ID generations', () => {
       const ids = new Set<string>();
-      
+
       // Generate many IDs and ensure they're all unique
       for (let i = 0; i < 1000; i++) {
         const id = StockItemId.random();
         ids.add(id.value);
       }
-      
+
       expect(ids.size).toBe(1000);
     });
   });

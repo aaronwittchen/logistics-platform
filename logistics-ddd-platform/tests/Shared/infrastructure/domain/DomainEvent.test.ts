@@ -15,7 +15,7 @@ class TestDomainEvent extends DomainEvent<TestPayload> {
     testData: string = 'default',
     testNumber: number = 0,
     eventId?: Uuid,
-    occurredOn?: Date
+    occurredOn?: Date,
   ) {
     super({ aggregateId, eventId, occurredOn });
     this.testData = testData;
@@ -42,12 +42,7 @@ class TestDomainEvent extends DomainEvent<TestPayload> {
 class AnotherTestDomainEvent extends DomainEvent<{ message: string }> {
   public static EVENT_NAME = 'another.test.event';
 
-  constructor(
-    aggregateId: Uuid,
-    message: string,
-    eventId?: Uuid,
-    occurredOn?: Date
-  ) {
+  constructor(aggregateId: Uuid, message: string, eventId?: Uuid, occurredOn?: Date) {
     super({ aggregateId, eventId, occurredOn });
     this.message = message;
   }
@@ -71,14 +66,8 @@ describe('DomainEvent', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const eventId = new Uuid('660e8400-e29b-41d4-a716-446655440000');
       const occurredOn = new Date('2023-01-01T12:00:00.000Z');
-      
-      const event = new TestDomainEvent(
-        aggregateId,
-        'test data',
-        42,
-        eventId,
-        occurredOn
-      );
+
+      const event = new TestDomainEvent(aggregateId, 'test data', 42, eventId, occurredOn);
 
       expect(event.aggregateId).toBe(aggregateId);
       expect(event.eventId).toBe(eventId);
@@ -88,7 +77,7 @@ describe('DomainEvent', () => {
     it('should generate eventId when not provided', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const occurredOn = new Date('2023-01-01T12:00:00.000Z');
-      
+
       const event = new TestDomainEvent(aggregateId, 'test', 42, undefined, occurredOn);
 
       expect(event.eventId).toBeDefined();
@@ -101,7 +90,7 @@ describe('DomainEvent', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const eventId = new Uuid('660e8400-e29b-41d4-a716-446655440000');
       const beforeCreation = new Date();
-      
+
       const event = new TestDomainEvent(aggregateId, 'test', 42, eventId);
 
       const afterCreation = new Date();
@@ -113,7 +102,7 @@ describe('DomainEvent', () => {
     it('should generate both eventId and occurredOn when not provided', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const beforeCreation = new Date();
-      
+
       const event = new TestDomainEvent(aggregateId);
 
       const afterCreation = new Date();
@@ -160,14 +149,8 @@ describe('DomainEvent', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const eventId = new Uuid('660e8400-e29b-41d4-a716-446655440000');
       const occurredOn = new Date('2023-01-01T12:00:00.000Z');
-      
-      const event = new TestDomainEvent(
-        aggregateId,
-        'test data',
-        42,
-        eventId,
-        occurredOn
-      );
+
+      const event = new TestDomainEvent(aggregateId, 'test data', 42, eventId, occurredOn);
 
       const primitives = event.toPrimitives();
 
@@ -185,7 +168,7 @@ describe('DomainEvent', () => {
     it('should handle generated timestamps correctly', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const event = new TestDomainEvent(aggregateId);
-      
+
       const primitives = event.toPrimitives();
 
       expect(primitives.occurredOn).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
@@ -195,7 +178,7 @@ describe('DomainEvent', () => {
     it('should merge payload with base properties correctly', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const event = new AnotherTestDomainEvent(aggregateId, 'test message');
-      
+
       const primitives = event.toPrimitives();
 
       expect(primitives).toEqual({
@@ -228,7 +211,7 @@ describe('DomainEvent', () => {
 
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const event = new EmptyPayloadEvent(aggregateId);
-      
+
       const primitives = event.toPrimitives();
 
       expect(primitives).toEqual({
@@ -246,7 +229,7 @@ describe('DomainEvent', () => {
       const aggregateId = new Uuid('550e8400-e29b-41d4-a716-446655440000');
       const eventId = new Uuid('660e8400-e29b-41d4-a716-446655440000');
       const occurredOn = new Date('2023-01-01T12:00:00.000Z');
-      
+
       const event = new TestDomainEvent(aggregateId, 'test', 42, eventId, occurredOn);
 
       // Properties should be readonly (TypeScript level)

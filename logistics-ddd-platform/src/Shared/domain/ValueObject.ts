@@ -5,7 +5,7 @@ export type Primitive = string | number | boolean | bigint | symbol | null | und
  * Checks if a value is a plain (non-null, non-array) object.
  */
 function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -63,14 +63,14 @@ function deepFreeze<T>(value: T): T {
     const iterate = Array.isArray(value)
       ? (value as unknown[]).forEach.bind(value)
       : (Object.values(value as Record<string, unknown>) as unknown[]).forEach.bind(
-          Object.values(value as Record<string, unknown>)
+          Object.values(value as Record<string, unknown>),
         );
 
-        iterate((child: unknown) => {
-          if (child && (typeof child === "object" || typeof child === "function") && !Object.isFrozen(child)) {
-            deepFreeze(child);
-          }
-        });
+    iterate((child: unknown) => {
+      if (child && (typeof child === 'object' || typeof child === 'function') && !Object.isFrozen(child)) {
+        deepFreeze(child);
+      }
+    });
 
     // Then freeze the parent itself
     Object.freeze(value);
@@ -94,7 +94,7 @@ export abstract class ValueObject<TProps extends object> {
 
     // Make the properties deeply immutable
     this.props = deepFreeze({ ...(props as Record<string, unknown>) }) as Readonly<TProps>;
-    
+
     // Make the entire instance immutable
     Object.freeze(this);
   }
@@ -103,7 +103,7 @@ export abstract class ValueObject<TProps extends object> {
    * Optional validation hook for enforcing domain invariants.
    * Override in subclasses to throw errors for invalid props.
    */
-  protected validate(props: TProps): void {}
+  protected validate(_props: TProps): void {}
 
   /**
    * Compares two value objects for deep equality.

@@ -103,11 +103,7 @@ describe('AddStockCommandHandler', () => {
 
   describe('execute method', () => {
     it('should successfully add stock item', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'iPhone 15',
-        100
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'iPhone 15', 100);
 
       await handler.execute(command);
 
@@ -121,11 +117,7 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should publish domain events when eventBus is provided', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'iPhone 15',
-        100
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'iPhone 15', 100);
 
       await handler.execute(command);
 
@@ -138,11 +130,7 @@ describe('AddStockCommandHandler', () => {
 
     it('should not publish events when eventBus is not provided', async () => {
       const handlerWithoutEventBus = new AddStockCommandHandler(repository);
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'iPhone 15',
-        100
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'iPhone 15', 100);
 
       await handlerWithoutEventBus.execute(command);
 
@@ -153,7 +141,7 @@ describe('AddStockCommandHandler', () => {
       const commandData = {
         id: '550e8400-e29b-41d4-a716-446655440000',
         name: 'Samsung Galaxy',
-        quantity: 50
+        quantity: 50,
       };
 
       const command = AddStockCommand.fromPrimitives(commandData);
@@ -170,7 +158,7 @@ describe('AddStockCommandHandler', () => {
       const commands = [
         new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'iPhone 15', 100),
         new AddStockCommand('660e8400-e29b-41d4-a716-446655440000', 'Samsung Galaxy', 50),
-        new AddStockCommand('770e8400-e29b-41d4-a716-446655440000', 'MacBook Pro', 25)
+        new AddStockCommand('770e8400-e29b-41d4-a716-446655440000', 'MacBook Pro', 25),
       ];
 
       for (const command of commands) {
@@ -187,7 +175,7 @@ describe('AddStockCommandHandler', () => {
       const expectedItems = [
         { id: '550e8400-e29b-41d4-a716-446655440000', name: 'iPhone 15', quantity: 100 },
         { id: '660e8400-e29b-41d4-a716-446655440000', name: 'Samsung Galaxy', quantity: 50 },
-        { id: '770e8400-e29b-41d4-a716-446655440000', name: 'MacBook Pro', quantity: 25 }
+        { id: '770e8400-e29b-41d4-a716-446655440000', name: 'MacBook Pro', quantity: 25 },
       ];
 
       expectedItems.forEach((expected, index) => {
@@ -219,11 +207,7 @@ describe('AddStockCommandHandler', () => {
 
   describe('domain object creation', () => {
     it('should create correct domain objects from command', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Test Product',
-        42
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Test Product', 42);
 
       await handler.execute(command);
 
@@ -243,15 +227,11 @@ describe('AddStockCommandHandler', () => {
         'Samsung Galaxy S24 Ultra',
         'MacBook Pro 16" M3 Max',
         'iPad Pro 12.9" (6th Gen)',
-        'AirPods Pro (2nd generation)'
+        'AirPods Pro (2nd generation)',
       ];
 
       for (const name of specialNames) {
-        const command = new AddStockCommand(
-          '550e8400-e29b-41d4-a716-446655440000',
-          name,
-          10
-        );
+        const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', name, 10);
 
         await handler.execute(command);
 
@@ -264,11 +244,7 @@ describe('AddStockCommandHandler', () => {
       const edgeQuantities = [0, 1, 1000, 100000, 1000000];
 
       for (const quantity of edgeQuantities) {
-        const command = new AddStockCommand(
-          '550e8400-e29b-41d4-a716-446655440000',
-          'Edge Case Item',
-          quantity
-        );
+        const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Edge Case Item', quantity);
 
         await handler.execute(command);
 
@@ -280,11 +256,7 @@ describe('AddStockCommandHandler', () => {
 
   describe('error handling', () => {
     it('should handle invalid UUID in command', async () => {
-      const command = new AddStockCommand(
-        'invalid-uuid',
-        'Test Product',
-        10
-      );
+      const command = new AddStockCommand('invalid-uuid', 'Test Product', 10);
 
       await expect(handler.execute(command)).rejects.toThrow('Invalid UUID');
     });
@@ -293,22 +265,14 @@ describe('AddStockCommandHandler', () => {
       const invalidQuantities = [-1, 1.5, Infinity, NaN];
 
       for (const quantity of invalidQuantities) {
-        const command = new AddStockCommand(
-          '550e8400-e29b-41d4-a716-446655440000',
-          'Test Product',
-          quantity
-        );
+        const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Test Product', quantity);
 
         await expect(handler.execute(command)).rejects.toThrow();
       }
     });
 
     it('should handle empty product names', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        '',
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', '', 10);
 
       await expect(handler.execute(command)).rejects.toThrow();
     });
@@ -317,7 +281,7 @@ describe('AddStockCommandHandler', () => {
       const command = new AddStockCommand(
         '550e8400-e29b-41d4-a716-446655440000',
         'Bulk Item',
-        1000000000 // Maximum allowed quantity
+        1000000000, // Maximum allowed quantity
       );
 
       await handler.execute(command);
@@ -329,11 +293,7 @@ describe('AddStockCommandHandler', () => {
 
   describe('repository interaction', () => {
     it('should call repository save method exactly once per execution', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Test Product',
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Test Product', 10);
 
       await handler.execute(command);
 
@@ -342,11 +302,7 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should save the correct stock item to repository', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Repository Test Item',
-        25
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Repository Test Item', 25);
 
       await handler.execute(command);
 
@@ -357,11 +313,7 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should be able to retrieve saved item using repository find method', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Find Test Item',
-        15
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Find Test Item', 15);
 
       await handler.execute(command);
 
@@ -382,11 +334,7 @@ describe('AddStockCommandHandler', () => {
         throw new Error('Database connection failed');
       };
 
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Error Test Item',
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Error Test Item', 10);
 
       await expect(errorHandler.execute(command)).rejects.toThrow('Database connection failed');
     });
@@ -397,11 +345,7 @@ describe('AddStockCommandHandler', () => {
       const handlerWithEventBus = new AddStockCommandHandler(repository, eventBus);
       const handlerWithoutEventBus = new AddStockCommandHandler(repository);
 
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Event Bus Test',
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Event Bus Test', 10);
 
       await handlerWithEventBus.execute(command);
       await handlerWithoutEventBus.execute(command);
@@ -410,11 +354,7 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should publish all domain events from the aggregate', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Multiple Events Item',
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Multiple Events Item', 10);
 
       await handler.execute(command);
 
@@ -427,22 +367,18 @@ describe('AddStockCommandHandler', () => {
 
     it('should not fail if eventBus publish throws error', async () => {
       const errorEventBus = new MockEventBus();
-      
+
       // Store original method
       const originalPublish = errorEventBus.publish;
-      
+
       // Override with error-throwing version
       errorEventBus.publish = async (events: DomainEvent[]) => {
         throw new Error('Event bus connection failed');
       };
-      
+
       const errorHandler = new AddStockCommandHandler(repository, errorEventBus);
 
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Event Bus Error Test',
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Event Bus Error Test', 10);
 
       // Should still save to repository even if event publishing fails
       await errorHandler.execute(command);
@@ -455,11 +391,7 @@ describe('AddStockCommandHandler', () => {
 
   describe('integration scenarios', () => {
     it('should handle complete workflow with repository and event bus', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Integration Test Item',
-        100
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Integration Test Item', 100);
 
       // Execute the handler
       await handler.execute(command);
@@ -489,7 +421,7 @@ describe('AddStockCommandHandler', () => {
         new AddStockCommand('660e8400-e29b-41d4-a716-446655440000', 'Item 2', 20),
         new AddStockCommand('770e8400-e29b-41d4-a716-446655440000', 'Item 3', 30),
         new AddStockCommand('880e8400-e29b-41d4-a716-446655440000', 'Item 4', 40),
-        new AddStockCommand('990e8400-e29b-41d4-a716-446655440000', 'Item 5', 50)
+        new AddStockCommand('990e8400-e29b-41d4-a716-446655440000', 'Item 5', 50),
       ];
 
       // Execute all commands
@@ -515,11 +447,7 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should maintain data consistency across operations', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Consistency Test Item',
-        100
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Consistency Test Item', 100);
 
       await handler.execute(command);
 
@@ -543,7 +471,7 @@ describe('AddStockCommandHandler', () => {
       const command = new AddStockCommand(
         '550e8400-e29b-41d4-a716-446655440000',
         'Max Quantity Item',
-        1000000000 // Maximum allowed
+        1000000000, // Maximum allowed
       );
 
       await handler.execute(command);
@@ -553,11 +481,7 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should handle minimum allowed quantity (zero)', async () => {
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        'Zero Quantity Item',
-        0
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', 'Zero Quantity Item', 0);
 
       await handler.execute(command);
 
@@ -567,11 +491,7 @@ describe('AddStockCommandHandler', () => {
 
     it('should handle very long product names', async () => {
       const longName = 'A'.repeat(100); // Use maximum allowed length (100 chars)
-      const command = new AddStockCommand(
-        '550e8400-e29b-41d4-a716-446655440000',
-        longName,
-        10
-      );
+      const command = new AddStockCommand('550e8400-e29b-41d4-a716-446655440000', longName, 10);
 
       await handler.execute(command);
 
@@ -580,17 +500,10 @@ describe('AddStockCommandHandler', () => {
     });
 
     it('should handle edge case UUIDs', async () => {
-      const edgeCaseUuids = [
-        '00000000-0000-4000-8000-000000000000',
-        'FFFFFFFF-FFFF-4FFF-BFFF-FFFFFFFFFFFF'
-      ];
+      const edgeCaseUuids = ['00000000-0000-4000-8000-000000000000', 'FFFFFFFF-FFFF-4FFF-BFFF-FFFFFFFFFFFF'];
 
       for (const uuid of edgeCaseUuids) {
-        const command = new AddStockCommand(
-          uuid,
-          'Edge Case UUID Item',
-          10
-        );
+        const command = new AddStockCommand(uuid, 'Edge Case UUID Item', 10);
 
         await handler.execute(command);
 

@@ -810,7 +810,7 @@ npm install -D @types/pg
 
 ```typescript
 import { DataSource } from 'typeorm';
-import { StockItemEntity } from '../../../Contexts/Inventory/StockItem/infrastructure/persistence/StockItemEntity';
+import { StockItemEntity } from '@ts/Inventory/StockItem/infrastructure/persistence/StockItemEntity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -904,11 +904,11 @@ export class TypeOrmStockItemRepository implements StockItemRepository {
 ```typescript
 import 'reflect-metadata';
 import { AppDataSource } from '@Shared/infrastructure/persistence/TypeOrmConfig';
-import { TypeOrmStockItemRepository } from '../../../../../src/Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
-import { StockItem } from '../../../../../src/Contexts/Inventory/StockItem/domain/StockItem';
-import { StockItemId } from '../../../../../src/Contexts/Inventory/StockItem/domain/StockItemId';
-import { StockItemName } from '../../../../../src/Contexts/Inventory/StockItem/domain/StockItemName';
-import { Quantity } from '../../../../../src/Contexts/Inventory/StockItem/domain/Quantity';
+import { TypeOrmStockItemRepository } from '@src/Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
+import { StockItem } from '@src/Contexts/Inventory/StockItem/domain/StockItem';
+import { StockItemId } from '@src/Contexts/Inventory/StockItem/domain/StockItemId';
+import { StockItemName } from '@src/Contexts/Inventory/StockItem/domain/StockItemName';
+import { Quantity } from '@src/Contexts/Inventory/StockItem/domain/Quantity';
 
 describe('TypeOrmStockItemRepository Integration', () => {
   let repository: TypeOrmStockItemRepository;
@@ -1032,9 +1032,9 @@ export class AddStockPostController {
 
 ```typescript
 import { Router } from 'express';
-import { AddStockPostController } from '../../../../Contexts/Inventory/StockItem/infrastructure/controllers/AddStockPostController';
-import { AddStockCommandHandler } from '../../../../Contexts/Inventory/StockItem/application/AddStock/AddStockCommandHandler';
-import { TypeOrmStockItemRepository } from '../../../../Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
+import { AddStockPostController } from '@texts/Inventory/StockItem/infrastructure/controllers/AddStockPostController';
+import { AddStockCommandHandler } from '@texts/Inventory/StockItem/application/AddStock/AddStockCommandHandler';
+import { TypeOrmStockItemRepository } from '@texts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
 
 export function createStockItemsRouter(): Router {
   const router = Router();
@@ -1055,8 +1055,8 @@ export function createStockItemsRouter(): Router {
 
 ```typescript
 import 'reflect-metadata';
-import { HttpServer } from '../../../Shared/infrastructure/http/HttpServer';
-import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOrmConfig';
+import { HttpServer } from '@/infrastructure/http/HttpServer';
+import { AppDataSource } from '@/infrastructure/persistence/TypeOrmConfig';
 import { createStockItemsRouter } from './routes/stock-items.route';
 
 export class InventoryBackendApp {
@@ -1128,9 +1128,9 @@ curl -X POST http://localhost:3000/stock-items \
 ```typescript
 import 'reflect-metadata';
 import request from 'supertest';
-import { HttpServer } from '../../../../src/Shared/infrastructure/http/HttpServer';
-import { AppDataSource } from '../../../../src/Shared/infrastructure/persistence/TypeOrmConfig';
-import { createStockItemsRouter } from '../../../../src/apps/inventory/backend/routes/stock-items.route';
+import { HttpServer } from '@/Shared/infrastructure/http/HttpServer';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
+import { createStockItemsRouter } from '@/apps/inventory/backend/routes/stock-items.route';
 
 describe('Add Stock Item - Acceptance Test', () => {
   let server: HttpServer;
@@ -1293,7 +1293,7 @@ export class RabbitMQConnection {
 **File**: `tests/Shared/infrastructure/event-bus/RabbitMQConnection.test.ts`
 
 ```typescript
-import { RabbitMQConnection } from '../../../../src/Shared/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQConnection } from '@/Shared/infrastructure/event-bus/RabbitMQConnection';
 
 describe('RabbitMQConnection Integration', () => {
   let connection: RabbitMQConnection;
@@ -1382,9 +1382,9 @@ export class RabbitMQEventBus implements EventBus {
 **File**: `tests/Shared/infrastructure/event-bus/RabbitMQEventBus.test.ts`
 
 ```typescript
-import { RabbitMQConnection } from '../../../../src/Shared/infrastructure/event-bus/RabbitMQConnection';
-import { RabbitMQEventBus } from '../../../../src/Shared/infrastructure/event-bus/RabbitMQEventBus';
-import { StockItemAdded } from '../../../../src/Contexts/Inventory/StockItem/domain/events/StockItemAdded';
+import { RabbitMQConnection } from '@/Shared/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQEventBus } from '@/Shared/infrastructure/event-bus/RabbitMQEventBus';
+import { StockItemAdded } from '@/Contexts/Inventory/StockItem/domain/events/StockItemAdded';
 
 describe('RabbitMQEventBus Integration', () => {
   let connection: RabbitMQConnection;
@@ -1485,10 +1485,10 @@ export class TypeOrmStockItemRepository implements StockItemRepository {
 
 ```typescript
 import { Router } from 'express';
-import { AddStockPostController } from '../../../../Contexts/Inventory/StockItem/infrastructure/controllers/AddStockPostController';
-import { AddStockCommandHandler } from '../../../../Contexts/Inventory/StockItem/application/AddStock/AddStockCommandHandler';
-import { TypeOrmStockItemRepository } from '../../../../Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
-import { EventBus } from '../../../../Shared/domain/EventBus';
+import { AddStockPostController } from '@texts/Inventory/StockItem/infrastructure/controllers/AddStockPostController';
+import { AddStockCommandHandler } from '@texts/Inventory/StockItem/application/AddStock/AddStockCommandHandler';
+import { TypeOrmStockItemRepository } from '@texts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
+import { EventBus } from '@red/domain/EventBus';
 
 export function createStockItemsRouter(eventBus: EventBus): Router {
   const router = Router();
@@ -1509,10 +1509,10 @@ export function createStockItemsRouter(eventBus: EventBus): Router {
 
 ```typescript
 import 'reflect-metadata';
-import { HttpServer } from '../../../Shared/infrastructure/http/HttpServer';
-import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOrmConfig';
-import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
-import { RabbitMQEventBus } from '../../../Shared/infrastructure/event-bus/RabbitMQEventBus';
+import { HttpServer } from '@/infrastructure/http/HttpServer';
+import { AppDataSource } from '@/infrastructure/persistence/TypeOrmConfig';
+import { RabbitMQConnection } from '@/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQEventBus } from '@/infrastructure/event-bus/RabbitMQEventBus';
 import { createStockItemsRouter } from './routes/stock-items.route';
 
 export class InventoryBackendApp {
@@ -1685,9 +1685,9 @@ export class StockItemAddedLogger
 
 ```typescript
 import 'reflect-metadata';
-import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
-import { RabbitMQConsumer } from '../../../Shared/infrastructure/event-bus/RabbitMQConsumer';
-import { StockItemAddedLogger } from '../../../Contexts/Inventory/StockItem/application/subscribers/StockItemAddedLogger';
+import { RabbitMQConnection } from '@/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQConsumer } from '@/infrastructure/event-bus/RabbitMQConsumer';
+import { StockItemAddedLogger } from '@ts/Inventory/StockItem/application/subscribers/StockItemAddedLogger';
 
 async function startConsumer() {
   const connection = new RabbitMQConnection({
@@ -2215,7 +2215,7 @@ export class ElasticSearchTrackingProjectionRepository
 
 ```typescript
 import { DomainEventSubscriber } from '@Shared/domain/DomainEventSubscriber';
-import { StockItemReserved } from '../../../Inventory/StockItem/domain/events/StockItemReserved';
+import { StockItemReserved } from '@ory/StockItem/domain/events/StockItemReserved';
 import { TrackingProjectionRepository } from '../domain/TrackingProjectionRepository';
 import { TrackingView } from '../domain/TrackingView';
 
@@ -2253,11 +2253,11 @@ export class StockItemReservedProjector
 
 ```typescript
 import 'reflect-metadata';
-import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
-import { RabbitMQConsumer } from '../../../Shared/infrastructure/event-bus/RabbitMQConsumer';
-import { ElasticSearchClient } from '../../../Shared/infrastructure/persistence/ElasticSearchClient';
-import { ElasticSearchTrackingProjectionRepository } from '../../../Contexts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
-import { StockItemReservedProjector } from '../../../Contexts/Backoffice/TrackingProjection/application/StockItemReservedProjector';
+import { RabbitMQConnection } from '@/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQConsumer } from '@/infrastructure/event-bus/RabbitMQConsumer';
+import { ElasticSearchClient } from '@/infrastructure/persistence/ElasticSearchClient';
+import { ElasticSearchTrackingProjectionRepository } from '@ts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
+import { StockItemReservedProjector } from '@ts/Backoffice/TrackingProjection/application/StockItemReservedProjector';
 
 async function startBackofficeConsumer() {
   const connection = new RabbitMQConnection({
@@ -2368,11 +2368,11 @@ export class GetTrackingGetController {
 
 ```typescript
 import 'reflect-metadata';
-import { HttpServer } from '../../../Shared/infrastructure/http/HttpServer';
-import { ElasticSearchClient } from '../../../Shared/infrastructure/persistence/ElasticSearchClient';
-import { ElasticSearchTrackingProjectionRepository } from '../../../Contexts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
-import { FindTrackingQueryHandler } from '../../../Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
-import { GetTrackingGetController } from '../../../Contexts/Backoffice/TrackingProjection/infrastructure/controllers/GetTrackingGetController';
+import { HttpServer } from '@/infrastructure/http/HttpServer';
+import { ElasticSearchClient } from '@/infrastructure/persistence/ElasticSearchClient';
+import { ElasticSearchTrackingProjectionRepository } from '@ts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
+import { FindTrackingQueryHandler } from '@ts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
+import { GetTrackingGetController } from '@ts/Backoffice/TrackingProjection/infrastructure/controllers/GetTrackingGetController';
 import { Router } from 'express';
 
 export class BackofficeBackendApp {
@@ -2730,10 +2730,10 @@ export class Package extends AggregateRoot {
 **File**: `tests/Contexts/Logistics/Package/domain/Package.test.ts`
 
 ```typescript
-import { Package } from '../../../../../src/Contexts/Logistics/Package/domain/Package';
-import { PackageId } from '../../../../../src/Contexts/Logistics/Package/domain/PackageId';
-import { TrackingNumber } from '../../../../../src/Contexts/Logistics/Package/domain/TrackingNumber';
-import { PackageRegistered } from '../../../../../src/Contexts/Logistics/Package/domain/events/PackageRegistered';
+import { Package } from '@src/Contexts/Logistics/Package/domain/Package';
+import { PackageId } from '@src/Contexts/Logistics/Package/domain/PackageId';
+import { TrackingNumber } from '@src/Contexts/Logistics/Package/domain/TrackingNumber';
+import { PackageRegistered } from '@src/Contexts/Logistics/Package/domain/events/PackageRegistered';
 
 describe('Package', () => {
   it('should register package', () => {
@@ -2861,7 +2861,7 @@ export class TypeOrmPackageRepository implements PackageRepository {
 
 ```typescript
 import { DomainEventSubscriber } from '@Shared/domain/DomainEventSubscriber';
-import { StockItemReserved } from '../../../../Inventory/StockItem/domain/events/StockItemReserved';
+import { StockItemReserved } from '@entory/StockItem/domain/events/StockItemReserved';
 import { Package } from '../../domain/Package';
 import { PackageId } from '../../domain/PackageId';
 import { TrackingNumber } from '../../domain/TrackingNumber';
@@ -2896,12 +2896,12 @@ export class CreatePackageOnStockReserved
 
 ```typescript
 import 'reflect-metadata';
-import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOrmConfig';
-import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
-import { RabbitMQEventBus } from '../../../Shared/infrastructure/event-bus/RabbitMQEventBus';
-import { RabbitMQConsumer } from '../../../Shared/infrastructure/event-bus/RabbitMQConsumer';
-import { TypeOrmPackageRepository } from '../../../Contexts/Logistics/Package/infrastructure/persistence/TypeOrmPackageRepository';
-import { CreatePackageOnStockReserved } from '../../../Contexts/Logistics/Package/application/subscribers/CreatePackageOnStockReserved';
+import { AppDataSource } from '@/infrastructure/persistence/TypeOrmConfig';
+import { RabbitMQConnection } from '@/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQEventBus } from '@/infrastructure/event-bus/RabbitMQEventBus';
+import { RabbitMQConsumer } from '@/infrastructure/event-bus/RabbitMQConsumer';
+import { TypeOrmPackageRepository } from '@ts/Logistics/Package/infrastructure/persistence/TypeOrmPackageRepository';
+import { CreatePackageOnStockReserved } from '@ts/Logistics/Package/application/subscribers/CreatePackageOnStockReserved';
 
 async function startLogisticsConsumer() {
   await AppDataSource.initialize();
@@ -2948,7 +2948,7 @@ Update TypeORM config to include PackageEntity:
 
 ```typescript
 // src/Shared/infrastructure/persistence/TypeOrmConfig.ts
-import { PackageEntity } from '../../../Contexts/Logistics/Package/infrastructure/persistence/PackageEntity';
+import { PackageEntity } from '@ts/Logistics/Package/infrastructure/persistence/PackageEntity';
 
 export const AppDataSource = new DataSource({
   // ... existing config
@@ -2999,7 +2999,7 @@ curl -X PUT http://localhost:3000/stock-items/550e8400-e29b-41d4-a716-4466554400
 
 ```typescript
 import { DomainEventSubscriber } from '@Shared/domain/DomainEventSubscriber';
-import { PackageRegistered } from '../../../Logistics/Package/domain/events/PackageRegistered';
+import { PackageRegistered } from '@ics/Package/domain/events/PackageRegistered';
 import { TrackingProjectionRepository } from '../domain/TrackingProjectionRepository';
 
 export class PackageRegisteredProjector
@@ -3030,7 +3030,7 @@ export class PackageRegisteredProjector
 
 ```typescript
 // Add to imports:
-import { PackageRegisteredProjector } from '../../../Contexts/Backoffice/TrackingProjection/application/PackageRegisteredProjector';
+import { PackageRegisteredProjector } from '@ts/Backoffice/TrackingProjection/application/PackageRegisteredProjector';
 
 // Update subscribers array:
 const subscribers = [
@@ -3673,7 +3673,7 @@ kubectl get pods -n logistics-platform
 
 ```typescript
 import { Router } from 'express';
-import { AppDataSource } from '../../../../Shared/infrastructure/persistence/TypeOrmConfig';
+import { AppDataSource } from '@red/infrastructure/persistence/TypeOrmConfig';
 
 export function createHealthRouter(): Router {
   const router = Router();

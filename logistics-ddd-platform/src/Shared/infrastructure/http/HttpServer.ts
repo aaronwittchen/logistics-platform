@@ -1,9 +1,9 @@
-import express, { type Express, type Request, type Response, type NextFunction, type Router } from "express";
-import type { Server } from "http";
-import { swaggerUi, specs } from "../swagger";
-import { log } from "@/utils/log";
+import express, { type Express, type Request, type Response, type NextFunction, type Router } from 'express';
+import type { Server } from 'http';
+import { swaggerUi, specs } from '../swagger';
+import { log } from '@/utils/log';
 
-export type HttpMethod = "get" | "post" | "put" | "patch" | "delete";
+export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
 export type RouteHandler = (req: Request, res: Response, next: NextFunction) => void | Promise<void>;
 
@@ -47,15 +47,15 @@ export class HttpServer {
   }
 
   public get(path: string, handler: RouteHandler): void {
-    this.registerRoutes([{ method: "get", path, handler }]);
+    this.registerRoutes([{ method: 'get', path, handler }]);
   }
 
   public post(path: string, handler: RouteHandler): void {
-    this.registerRoutes([{ method: "post", path, handler }]);
+    this.registerRoutes([{ method: 'post', path, handler }]);
   }
 
-  public listen(port: number, host = "0.0.0.0"): Promise<void> {
-    return new Promise((resolve) => {
+  public listen(port: number, host = '0.0.0.0'): Promise<void> {
+    return new Promise(resolve => {
       this.server = this.app.listen(port, host, () => resolve());
     });
   }
@@ -63,7 +63,7 @@ export class HttpServer {
   public async close(): Promise<void> {
     const srv = this.server;
     if (!srv) return;
-    await new Promise<void>((resolve, reject) => srv.close((err) => (err ? reject(err) : resolve())));
+    await new Promise<void>((resolve, reject) => srv.close(err => (err ? reject(err) : resolve())));
     this.server = undefined;
   }
 

@@ -38,8 +38,7 @@ export class Uuid extends ValueObject<UuidProps> {
    */
   protected validate(props: UuidProps): void {
     const id = props.value;
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     if (!uuidRegex.test(id)) {
       throw new Error('Invalid UUID');
@@ -50,14 +49,14 @@ export class Uuid extends ValueObject<UuidProps> {
     return this.unwrap().value;
   }
 
-    /**
+  /**
    * Returns the UUID string value.
    */
-    toString(): string {
-      return this.value;
-    }
-  
-    static from(value: string): Uuid {
-      return new Uuid(value);
-    }
+  toString(): string {
+    return this.value;
   }
+
+  static from(value: string): Uuid {
+    return new Uuid(value);
+  }
+}

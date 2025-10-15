@@ -1,8 +1,8 @@
-import { DomainEvent, DomainEventPrimitives } from "@/Shared/domain/DomainEvent";
-import { Uuid } from "@/Shared/domain/Uuid";
-import { StockItemId } from "../StockItemId";
-import { StockItemName } from "../StockItemName";
-import { Quantity } from "../Quantity";
+import { DomainEvent, DomainEventPrimitives } from '@/Shared/domain/DomainEvent';
+import { Uuid } from '@/Shared/domain/Uuid';
+import { StockItemId } from '../StockItemId';
+import { StockItemName } from '../StockItemName';
+import { Quantity } from '../Quantity';
 
 /**
  * Payload shape for the StockItemAdded event.
@@ -10,8 +10,8 @@ import { Quantity } from "../Quantity";
  * Defines the data that will be serialized when the event is published.
  */
 export interface StockItemAddedPayload {
-  name: string;       // stock item name
-  quantity: number;   // stock item quantity
+  name: string; // stock item name
+  quantity: number; // stock item quantity
 }
 
 /**
@@ -25,7 +25,7 @@ export interface StockItemAddedPayload {
  */
 export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
   /** Static event name for this domain event */
-  static EVENT_NAME = "inventory.stock_item.added";
+  static EVENT_NAME = 'inventory.stock_item.added';
 
   /**
    * Constructor
@@ -35,16 +35,16 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
    * @param quantity - the Quantity value object
    */
   constructor(
-    params: { aggregateId: StockItemId; eventId?: Uuid; occurredOn?: Date },
+    params: { aggregateId: Uuid; eventId?: Uuid; occurredOn?: Date },
     private readonly stockItemName: StockItemName,
-    private readonly stockQuantity: Quantity
+    private readonly stockQuantity: Quantity,
   ) {
     super(params); // call base DomainEvent constructor
   }
 
   /** Returns the event name */
   public eventName(): string {
-    return "inventory.stock_item.added";
+    return 'inventory.stock_item.added';
   }
 
   /** Returns the stock item name */
@@ -74,7 +74,7 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
   static fromPrimitives(primitives: DomainEventPrimitives): StockItemAdded {
     // Handle both direct payload format and nested attributes format
     const payload = (primitives as DomainEventPrimitives & { attributes?: unknown }).attributes || primitives;
-    
+
     // Map RabbitMQ message structure to DomainEventPrimitives structure
     const eventPrimitives: DomainEventPrimitives = {
       aggregateId: primitives.aggregateId,
@@ -82,9 +82,9 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
       occurredOn: primitives.occurredOn,
       eventName: (primitives as DomainEventPrimitives & { type?: string }).type || primitives.eventName,
       eventVersion: (payload as DomainEventPrimitives & { eventVersion?: string }).eventVersion,
-      ...payload
+      ...payload,
     };
-    
+
     // Validate required payload fields before creating value objects
     if (!eventPrimitives.name) {
       throw new Error('Missing name in event attributes');
@@ -92,15 +92,15 @@ export class StockItemAdded extends DomainEvent<StockItemAddedPayload> {
     if (eventPrimitives.quantity === undefined || eventPrimitives.quantity === null) {
       throw new Error('Missing quantity in event attributes');
     }
-    
+
     return new StockItemAdded(
       {
         aggregateId: StockItemId.from(eventPrimitives.aggregateId),
         eventId: Uuid.from(eventPrimitives.eventId),
-        occurredOn: new Date(eventPrimitives.occurredOn)
+        occurredOn: new Date(eventPrimitives.occurredOn),
       },
       StockItemName.from(eventPrimitives.name as string),
-      Quantity.from(eventPrimitives.quantity as number)
+      Quantity.from(eventPrimitives.quantity as number),
     );
   }
 }

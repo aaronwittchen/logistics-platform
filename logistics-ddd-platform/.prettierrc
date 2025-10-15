@@ -28,10 +28,7 @@
 
   "embeddedLanguageFormatting": "auto",
 
-  "importOrder": [
-    "^@/(.*)$",
-    "^[./]"
-  ],
+  "importOrder": ["^@/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "importOrderBuiltinModulesToTop": true,

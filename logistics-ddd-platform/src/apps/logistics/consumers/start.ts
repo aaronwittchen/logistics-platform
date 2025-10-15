@@ -1,19 +1,21 @@
 import 'reflect-metadata';
-import { AppDataSource } from '../../../Shared/infrastructure/persistence/TypeOrmConfig';
-import { RabbitMQConnection } from '../../../Shared/infrastructure/event-bus/RabbitMQConnection';
-import { RabbitMQEventBus } from '../../../Shared/infrastructure/event-bus/RabbitMQEventBus';
-import { RabbitMQConsumer } from '../../../Shared/infrastructure/event-bus/RabbitMQConsumer';
-import { CircuitBreaker } from '../../../Shared/infrastructure/event-bus/CircuitBreaker';
-import { EventRegistry } from '../../../Shared/infrastructure/event-bus/EventRegistry';
-import { TypeOrmPackageRepository } from '../../../Contexts/Logistics/Package/infrastructure/persistence/TypeOrmPackageRepository';
-import { CreatePackageOnStockReserved } from '../../../Contexts/Logistics/Package/application/subscribers/CreatePackageOnStockReserved';
-import { PackageDeliveryTracker } from '../../../Contexts/Logistics/Package/application/subscribers/PackageDeliveryTracker';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
+import { RabbitMQConnection } from '@/Shared/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQEventBus } from '@/Shared/infrastructure/event-bus/RabbitMQEventBus';
+import { RabbitMQConsumer } from '@/Shared/infrastructure/event-bus/RabbitMQConsumer';
+import { CircuitBreaker } from '@/Shared/infrastructure/event-bus/CircuitBreaker';
+import { TypeOrmPackageRepository } from '@/Contexts/Logistics/Package/infrastructure/persistence/TypeOrmPackageRepository';
+import { PackageDeliveryTracker } from '@/Contexts/Logistics/Package/application/subscribers/PackageDeliveryTracker';
 import { PackageStatusUpdater } from '@/Contexts/Logistics/Package/application/subscribers/PackageStatusUpdater';
 import { InventoryReservationMonitor } from '@/Contexts/Logistics/Package/application/subscribers/InventoryReservationMonitor';
-import { Package } from '../../../Contexts/Logistics/Package/domain/Package';
-import { PackageId } from '../../../Contexts/Logistics/Package/domain/PackageId';
-import { TrackingNumber } from '../../../Contexts/Logistics/Package/domain/TrackingNumber';
+import { Package } from '@/Contexts/Logistics/Package/domain/Package';
+import { PackageId } from '@/Contexts/Logistics/Package/domain/PackageId';
+import { TrackingNumber } from '@/Contexts/Logistics/Package/domain/TrackingNumber';
 import { log } from '@/utils/log';
+import { DomainEvent, DomainEventPrimitives } from '@/Shared/domain/DomainEvent';
+import { DomainEventSubscriber } from '@/Shared/domain/DomainEventSubscriber';
+import { PackageRepository } from '@/Contexts/Logistics/Package/domain/PackageRepository';
+import { StockItemReserved } from '@/Contexts/Inventory/StockItem/domain/events/StockItemReserved';
 
 // Enhanced configuration interface
 interface ConsumerConfig {
@@ -94,6 +96,7 @@ export class ConsumerMetrics {
 
   recordEventFailed(eventName: string): void {
     this.metrics.eventsFailed++;
+    log.warn(`Event processing failed for: ${eventName}`);
   }
 
   recordEventRetried(): void {
@@ -132,18 +135,20 @@ class HealthChecker {
 // Enhanced error handling with context
 export class ConsumerErrorHandler {
   handleError(error: Error, context: { eventName?: string; subscriber?: string; operation?: string }): void {
-    log.err(`Consumer error in ${context.subscriber || 'unknown'}: ${JSON.stringify({
-      error: error.message,
-      stack: error.stack,
-      context,
-      timestamp: new Date().toISOString(),
-    })}`);
+    log.err(
+      `Consumer error in ${context.subscriber || 'unknown'}: ${JSON.stringify({
+        error: error.message,
+        stack: error.stack,
+        context,
+        timestamp: new Date().toISOString(),
+      })}`,
+    );
 
     // Send to monitoring system if available
     this.sendToMonitoring(error, context);
   }
 
-  private sendToMonitoring(error: Error, context: any): void {
+  private sendToMonitoring(error: Error, context: Record<string, unknown>): void {
     // Implementation would depend on your monitoring system (Prometheus, DataDog, etc.)
     log.info(`Alert: ${error.message} ${JSON.stringify(context)}`);
   }
@@ -240,7 +245,7 @@ class LogisticsConsumerApp {
     this.circuitBreaker = new CircuitBreaker(
       config.circuitBreaker.failureThreshold,
       config.circuitBreaker.recoveryTimeout,
-      config.circuitBreaker.successThreshold
+      config.circuitBreaker.successThreshold,
     );
   }
 
@@ -282,7 +287,6 @@ class LogisticsConsumerApp {
       this.setupGracefulShutdown();
 
       log.ok('Logistics consumer started successfully');
-
     } catch (error) {
       log.err(`Failed to start logistics consumer: ${error}`);
       throw error;
@@ -300,8 +304,6 @@ class LogisticsConsumerApp {
   }
 
   private registerEventClasses(): void {
-    const registry = EventRegistry.getInstance();
-    
     // Import and register all event classes used by this consumer
     // This ensures proper deserialization of events
     log.info('Registering event classes...');
@@ -313,21 +315,21 @@ class LogisticsConsumerApp {
     return [
       // Enhanced package creation subscriber
       new EnhancedPackageCreationSubscriber(repository, this.metrics, this.errorHandler),
-      
+
       // Package delivery tracking subscriber
       new PackageDeliveryTracker(repository, this.metrics, this.errorHandler),
-      
+
       // Package status update subscriber
       new PackageStatusUpdater(repository, this.metrics, this.errorHandler),
-      
+
       // Inventory reservation monitoring subscriber
       new InventoryReservationMonitor(repository, this.metrics, this.errorHandler),
-      
+
       // Additional subscribers can be added here
     ];
   }
 
-  private async startConsumerWithRetry(subscribers: any[]): Promise<void> {
+  private async startConsumerWithRetry(subscribers: DomainEventSubscriber<DomainEvent>[]): Promise<void> {
     let attempts = 0;
     const maxAttempts = 3;
 
@@ -340,12 +342,11 @@ class LogisticsConsumerApp {
         log.err(`Consumer start attempt ${attempts} failed: ${error}`);
 
         if (attempts >= maxAttempts) {
-          throw new Error(`Failed to start consumer after ${maxAttempts} attempts`);
+          log.err('Max retry attempts reached. Consumer failed to start.');
+          throw error;
         }
 
-        const delay = 5000 * attempts; // Exponential backoff
-        log.info(`Retrying consumer start in ${delay}ms...`);
-        await this.delay(delay);
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
       }
     }
   }
@@ -360,7 +361,7 @@ class LogisticsConsumerApp {
     setInterval(() => {
       const health = this.healthChecker.getHealth();
       const metrics = this.metrics.getMetrics();
-      
+
       log.info(`Health check: ${JSON.stringify({ health, metrics })}`);
 
       // Update circuit breaker state in health check
@@ -379,14 +380,14 @@ class LogisticsConsumerApp {
     process.on('SIGUSR2', () => this.shutdownHandler.shutdown(this.rabbitConnection)); // For nodemon
 
     // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       log.err(`Uncaught exception: ${error}`);
       this.errorHandler.handleError(error, { operation: 'uncaught_exception' });
       this.shutdownHandler.shutdown();
     });
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on('unhandledRejection', (reason, _promise) => {
       log.err(`Unhandled promise rejection: ${reason}`);
       this.errorHandler.handleError(new Error(String(reason)), { operation: 'unhandled_rejection' });
     });
@@ -398,26 +399,26 @@ class LogisticsConsumerApp {
 }
 
 // Enhanced subscriber base class
-abstract class EnhancedSubscriber {
+abstract class EnhancedSubscriber implements DomainEventSubscriber<DomainEvent> {
   constructor(
-    protected repository: any,
+    protected repository: PackageRepository,
     protected metrics: ConsumerMetrics,
-    protected errorHandler: ConsumerErrorHandler
+    protected errorHandler: ConsumerErrorHandler,
   ) {}
 
-  abstract subscribedTo(): any[];
-  abstract on(event: any): Promise<void>;
+  abstract subscribedTo(): Array<{
+    EVENT_NAME: string;
+    fromPrimitives: (data: DomainEventPrimitives) => DomainEvent;
+  }>;
+  abstract on(event: DomainEvent): Promise<void>;
 
-  protected async executeWithMetrics<T>(
-    eventName: string,
-    operation: () => Promise<T>
-  ): Promise<T> {
+  protected async executeWithMetrics<T>(eventName: string, operation: () => Promise<T>): Promise<T> {
     const startTime = Date.now();
-    
+
     try {
       const result = await operation();
       const processingTime = Date.now() - startTime;
-      
+
       this.metrics.recordEventProcessed(eventName, processingTime);
       return result;
     } catch (error) {
@@ -430,25 +431,34 @@ abstract class EnhancedSubscriber {
 // Enhanced package creation subscriber with advanced error handling
 class EnhancedPackageCreationSubscriber extends EnhancedSubscriber {
   subscribedTo() {
-    return [CreatePackageOnStockReserved];
+    return [
+      {
+        EVENT_NAME: 'inventory.stock_item.reserved',
+        fromPrimitives: (data: DomainEventPrimitives) => {
+          // Use the imported StockItemReserved instead of require()
+          return StockItemReserved.fromPrimitives(data);
+        },
+      },
+    ];
   }
 
-  async on(event: any): Promise<void> {
+  async on(event: DomainEvent): Promise<void> {
     await this.executeWithMetrics('stock_item.reserved', async () => {
       try {
-        const pkg = Package.register(
-          PackageId.random(),
-          TrackingNumber.generate(),
-          event.reservationIdentifier
-        );
+        // Create a proper interface for the event data
+        interface StockReservedEvent extends DomainEvent {
+          reservationIdentifier: string;
+        }
+
+        const stockEvent = event as StockReservedEvent;
+        const pkg = Package.register(PackageId.random(), TrackingNumber.generate(), stockEvent.reservationIdentifier);
 
         await this.repository.save(pkg);
 
-        log.info(`Package created for reservation: ${event.reservationIdentifier}`);
-        
+        log.info(`Package created for reservation: ${stockEvent.reservationIdentifier}`);
+
         // Additional business logic could be added here
         // e.g., send notifications, update external systems, etc.
-        
       } catch (error) {
         this.errorHandler.handleError(error as Error, {
           subscriber: 'EnhancedPackageCreationSubscriber',
@@ -467,7 +477,7 @@ async function startLogisticsConsumer() {
 }
 
 // Start the consumer
-startLogisticsConsumer().catch((error) => {
+startLogisticsConsumer().catch(error => {
   log.err(`Failed to start logistics consumer: ${error}`);
   process.exit(1);
 });

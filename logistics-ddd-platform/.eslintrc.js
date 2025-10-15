@@ -1,7 +1,7 @@
 module.exports = {
   // Parser for TypeScript files
   parser: '@typescript-eslint/parser',
-  
+
   // Parser options
   parserOptions: {
     ecmaVersion: 2020,
@@ -12,27 +12,24 @@ module.exports = {
       jsx: false,
     },
   },
-  
+
   // Plugins
-  plugins: [
-    '@typescript-eslint',
-    '@typescript-eslint/eslint-plugin',
-  ],
-  
+  plugins: ['@typescript-eslint', '@typescript-eslint/eslint-plugin'],
+
   // Extends (base configurations)
   extends: [
     'eslint:recommended',
     '@typescript-eslint/recommended',
     '@typescript-eslint/recommended-requiring-type-checking',
   ],
-  
+
   // Environment settings
   env: {
     node: true,
     es2020: true,
     jest: true, // For test files
   },
-  
+
   // Global variables
   globals: {
     console: 'readonly',
@@ -45,7 +42,7 @@ module.exports = {
     module: 'readonly',
     exports: 'readonly',
   },
-  
+
   // Rules configuration
   rules: {
     // TypeScript-specific rules
@@ -56,39 +53,42 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'warn', // Warn about unsafe assertions
     '@typescript-eslint/prefer-nullish-coalescing': 'error', // Prefer ?? over ||
     '@typescript-eslint/prefer-optional-chain': 'error', // Prefer optional chaining
-    
+
     // Code quality rules
-    '@typescript-eslint/no-magic-numbers': ['warn', {
-      ignore: [0, 1, -1],
-      ignoreArrayIndexes: true,
-      ignoreDefaultValues: true,
-      ignoreEnums: true,
-    }],
-    
+    '@typescript-eslint/no-magic-numbers': [
+      'warn',
+      {
+        ignore: [0, 1, -1],
+        ignoreArrayIndexes: true,
+        ignoreDefaultValues: true,
+        ignoreEnums: true,
+      },
+    ],
+
     // Import/Export rules
     '@typescript-eslint/no-var-requires': 'off', // Allow require() for dynamic imports
     '@typescript-eslint/no-require-imports': 'off', // Allow require() patterns
-    
+
     // Class and method rules for DDD
     '@typescript-eslint/no-parameter-properties': 'off', // Allow parameter properties in classes
-    
+
     // Error prevention
     'no-console': 'off', // Allow console.log for debugging (you have custom logger)
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    
+
     // Code style
     'max-len': ['error', { code: 120, ignoreUrls: true, ignoreStrings: true }],
-    'semi': ['error', 'always'],
-    'quotes': ['error', 'single', { avoidEscape: true }],
+    semi: ['error', 'always'],
+    quotes: ['error', 'single', { avoidEscape: true }],
     'comma-dangle': ['error', 'always-multiline'],
-    
+
     // Best practices
     'prefer-const': 'error',
     'no-var': 'error',
     'object-shorthand': 'error',
     'prefer-arrow-callback': 'error',
     'prefer-template': 'error',
-    
+
     // Domain-Driven Design specific patterns
     '@typescript-eslint/naming-convention': [
       'error',
@@ -109,11 +109,11 @@ module.exports = {
         format: ['UPPER_CASE', 'camelCase', 'PascalCase'],
       },
     ],
-    
+
     // Infrastructure layer rules
     '@typescript-eslint/no-inferrable-types': 'off', // Allow explicit types in infrastructure
   },
-  
+
   // Override rules for specific file patterns
   overrides: [
     // Test files - more lenient rules
@@ -126,7 +126,7 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
-    
+
     // Infrastructure layer - allow more flexibility
     {
       files: ['src/**/infrastructure/**/*.ts'],
@@ -135,7 +135,7 @@ module.exports = {
         '@typescript-eslint/no-magic-numbers': 'warn',
       },
     },
-    
+
     // Domain layer - strict rules for business logic
     {
       files: ['src/**/domain/**/*.ts'],
@@ -145,13 +145,7 @@ module.exports = {
       },
     },
   ],
-  
+
   // Ignore patterns
-  ignorePatterns: [
-    'dist/',
-    'node_modules/',
-    'coverage/',
-    '*.js',
-    '!.eslintrc.js',
-  ],
+  ignorePatterns: ['dist/', 'node_modules/', 'coverage/', '*.js', '!.eslintrc.js'],
 };

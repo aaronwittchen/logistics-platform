@@ -65,10 +65,7 @@ const options = {
       },
     },
   },
-  apis: [
-    'src/Contexts/Inventory/StockItem/infrastructure/controllers/*.ts',
-    'src/apps/inventory/backend/routes/*.ts',
-  ],
+  apis: ['src/Contexts/Inventory/StockItem/infrastructure/controllers/*.ts', 'src/apps/inventory/backend/routes/*.ts'],
 };
 
 const specs = swaggerJsdoc(options);

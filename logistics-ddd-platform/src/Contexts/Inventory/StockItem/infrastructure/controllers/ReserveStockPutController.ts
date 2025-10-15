@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ReserveStockCommandHandler } from '../../application/ReserveStock/ReserveStockCommandHandler';
-import { ReserveStockCommand } from '../../application/ReserveStock/ReserveStockCommand';
+import { ReserveStockCommandHandler } from '@/Contexts/Inventory/StockItem/application/ReserveStock/ReserveStockCommandHandler';
+import { ReserveStockCommand } from '@/Contexts/Inventory/StockItem/application/ReserveStock/ReserveStockCommand';
 
 /**
  * @swagger
@@ -62,7 +62,7 @@ export class ReserveStockPutController {
       // Validate required fields
       if (!id || quantity === undefined || !reservationId) {
         res.status(400).json({
-          error: 'id (in path), quantity and reservationId are required'
+          error: 'id (in path), quantity and reservationId are required',
         });
         return;
       }
@@ -70,7 +70,7 @@ export class ReserveStockPutController {
       // Validate quantity is a positive number
       if (typeof quantity !== 'number' || quantity <= 0) {
         res.status(400).json({
-          error: 'quantity must be a positive number'
+          error: 'quantity must be a positive number',
         });
         return;
       }
@@ -79,14 +79,15 @@ export class ReserveStockPutController {
       await this.handler.execute(command);
 
       res.status(200).json({ message: 'Stock reserved successfully' });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle specific business errors
-      if (error.message === 'Stock item not found') {
+      if (error instanceof Error && error.message === 'Stock item not found') {
         res.status(404).json({ error: error.message });
-      } else if (error.message === 'Insufficient stock') {
+      } else if (error instanceof Error && error.message === 'Insufficient stock') {
         res.status(409).json({ error: error.message });
       } else {
-        res.status(400).json({ error: error.message });
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        res.status(400).json({ error: errorMessage });
       }
     }
   }

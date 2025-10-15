@@ -3,7 +3,6 @@ import { StockItemReserved } from '@/Contexts/Inventory/StockItem/domain/events/
 import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
 import { Quantity } from '@/Contexts/Inventory/StockItem/domain/Quantity';
 import { Uuid } from '@/Shared/domain/Uuid';
-import { DomainEventPrimitives } from '@/Shared/domain/DomainEvent';
 
 describe('StockItemReserved', () => {
   describe('constructor', () => {
@@ -13,12 +12,7 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(10);
       const reservationId = 'reservation-123';
 
-      const event = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
       expect(event).toBeDefined();
       expect(event.aggregateId).toBe(aggregateId);
@@ -40,7 +34,7 @@ describe('StockItemReserved', () => {
         { aggregateId, eventId: customEventId, occurredOn: customTimestamp },
         stockItemId,
         quantity,
-        reservationId
+        reservationId,
       );
 
       expect(event.eventId).toBe(customEventId);
@@ -57,12 +51,7 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(25);
       const reservationId = 'reservation-789';
 
-      const event = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
       const payload = (event as any).toPayload();
       expect(payload).toEqual({
@@ -80,12 +69,7 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(15);
       const reservationId = 'reservation-abc';
 
-      const event = new StockItemReserved(
-        { aggregateId, eventId, occurredOn },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event = new StockItemReserved({ aggregateId, eventId, occurredOn }, stockItemId, quantity, reservationId);
 
       const primitives = event.toPrimitives();
 
@@ -109,19 +93,9 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(10);
       const reservationId = 'reservation-123';
 
-      const event1 = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event1 = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
-      const event2 = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event2 = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
       expect(event1.equals(event2)).toBe(true);
     });
@@ -131,19 +105,9 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(10);
       const reservationId = 'reservation-123';
 
-      const event1 = new StockItemReserved(
-        { aggregateId },
-        StockItemId.random(),
-        quantity,
-        reservationId
-      );
+      const event1 = new StockItemReserved({ aggregateId }, StockItemId.random(), quantity, reservationId);
 
-      const event2 = new StockItemReserved(
-        { aggregateId },
-        StockItemId.random(),
-        quantity,
-        reservationId
-      );
+      const event2 = new StockItemReserved({ aggregateId }, StockItemId.random(), quantity, reservationId);
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -153,19 +117,9 @@ describe('StockItemReserved', () => {
       const stockItemId = StockItemId.random();
       const reservationId = 'reservation-123';
 
-      const event1 = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        new Quantity(10),
-        reservationId
-      );
+      const event1 = new StockItemReserved({ aggregateId }, stockItemId, new Quantity(10), reservationId);
 
-      const event2 = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        new Quantity(20),
-        reservationId
-      );
+      const event2 = new StockItemReserved({ aggregateId }, stockItemId, new Quantity(20), reservationId);
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -175,19 +129,9 @@ describe('StockItemReserved', () => {
       const stockItemId = StockItemId.random();
       const quantity = new Quantity(10);
 
-      const event1 = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        'reservation-123'
-      );
+      const event1 = new StockItemReserved({ aggregateId }, stockItemId, quantity, 'reservation-123');
 
-      const event2 = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        'reservation-456'
-      );
+      const event2 = new StockItemReserved({ aggregateId }, stockItemId, quantity, 'reservation-456');
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -224,12 +168,7 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(0);
       const reservationId = 'reservation-zero';
 
-      const event = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
       expect(event.reservedQuantity).toBe(0);
       expect(event.reservationIdentifier).toBe('reservation-zero');
@@ -241,12 +180,7 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(1000000);
       const reservationId = 'reservation-large';
 
-      const event = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
       expect(event.reservedQuantity).toBe(1000000);
     });
@@ -257,12 +191,7 @@ describe('StockItemReserved', () => {
       const quantity = new Quantity(10);
       const reservationId = 'reservation-123_ABC-xyz.456';
 
-      const event = new StockItemReserved(
-        { aggregateId },
-        stockItemId,
-        quantity,
-        reservationId
-      );
+      const event = new StockItemReserved({ aggregateId }, stockItemId, quantity, reservationId);
 
       expect(event.reservationIdentifier).toBe('reservation-123_ABC-xyz.456');
     });

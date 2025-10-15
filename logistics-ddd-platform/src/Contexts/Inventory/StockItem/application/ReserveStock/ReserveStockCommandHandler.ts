@@ -1,8 +1,8 @@
 import type { EventBus } from '@/Shared/domain/EventBus';
 import { ReserveStockCommand } from './ReserveStockCommand';
-import type { StockItemRepository } from '../../domain/StockItemRepository';
-import { StockItemId } from '../../domain/StockItemId';
-import { Quantity } from '../../domain/Quantity';
+import type { StockItemRepository } from '@/Contexts/Inventory/StockItem/domain/StockItemRepository';
+import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
+import { Quantity } from '@/Contexts/Inventory/StockItem/domain/Quantity';
 
 /**
  * ReserveStockCommandHandler
@@ -19,7 +19,7 @@ import { Quantity } from '../../domain/Quantity';
 export class ReserveStockCommandHandler {
   constructor(
     private readonly repository: StockItemRepository,
-    private readonly eventBus?: EventBus
+    private readonly eventBus?: EventBus,
   ) {}
 
   /**

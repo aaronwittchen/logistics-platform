@@ -85,11 +85,11 @@ describe('ValueObject', () => {
     it('should freeze primitive properties', () => {
       const vo = new TestValueObject('test', 42);
       const props = vo.unwrap();
-      
+
       expect(() => {
         (props as any).value = 'modified';
       }).toThrow();
-      
+
       expect(() => {
         (props as any).number = 99;
       }).toThrow();
@@ -99,7 +99,7 @@ describe('ValueObject', () => {
       const created = new Date();
       const tags = ['tag1', 'tag2'];
       const vo = new NestedValueObject('test', created, tags);
-      
+
       const metadata = vo.unwrap().metadata;
       expect(Object.isFrozen(metadata)).toBe(true);
       expect(Object.isFrozen(metadata.created)).toBe(true);
@@ -110,12 +110,12 @@ describe('ValueObject', () => {
       const created = new Date();
       const tags = ['tag1', 'tag2'];
       const vo = new NestedValueObject('test', created, tags);
-      
+
       const frozenTags = vo.unwrap().metadata.tags;
       expect(() => {
         frozenTags.push('new tag');
       }).toThrow();
-      
+
       expect(() => {
         frozenTags[0] = 'modified';
       }).toThrow();
@@ -124,10 +124,10 @@ describe('ValueObject', () => {
     it('should handle Date objects correctly', () => {
       const created = new Date();
       const vo = new NestedValueObject('test', created);
-      
+
       // Date should be frozen
       expect(Object.isFrozen(vo.unwrap().metadata.created)).toBe(true);
-      
+
       // But we should still be able to compare dates
       const retrievedDate = vo.created;
       expect(retrievedDate).toEqual(created);
@@ -169,7 +169,7 @@ describe('ValueObject', () => {
       const date2 = new Date('2023-01-01');
       const vo1 = new NestedValueObject('test', date1, ['tag1']);
       const vo2 = new NestedValueObject('test', date2, ['tag1']);
-      
+
       expect(vo1.equals(vo2)).toBe(true);
     });
 
@@ -177,7 +177,7 @@ describe('ValueObject', () => {
       const vo1 = new NestedValueObject('test', new Date(), ['tag1', 'tag2']);
       const vo2 = new NestedValueObject('test', new Date(), ['tag1', 'tag2']);
       const vo3 = new NestedValueObject('test', new Date(), ['tag1', 'different']);
-      
+
       expect(vo1.equals(vo2)).toBe(true);
       expect(vo1.equals(vo3)).toBe(false);
     });
@@ -186,7 +186,7 @@ describe('ValueObject', () => {
       const vo1 = new NestedValueObject('test', new Date(), ['tag1']);
       const vo2 = new NestedValueObject('test', new Date(), ['tag1']);
       const vo3 = new NestedValueObject('different', new Date(), ['tag1']);
-      
+
       expect(vo1.equals(vo2)).toBe(true);
       expect(vo1.equals(vo3)).toBe(false);
     });
@@ -202,7 +202,7 @@ describe('ValueObject', () => {
     it('should stringify correctly', () => {
       const uuid = '550e8400-e29b-41d4-a716-446655440000';
       const id = StockItemId.from(uuid);
-      
+
       const str = JSON.stringify(id);
       expect(str).toBe('{"value":"550e8400-e29b-41d4-a716-446655440000"}');
     });
@@ -210,14 +210,14 @@ describe('ValueObject', () => {
     it('should handle nested objects in serialization', () => {
       const created = new Date('2023-01-01T00:00:00.000Z');
       const vo = new NestedValueObject('test', created, ['tag1']);
-      
+
       const json = vo.toJSON();
       expect(json).toEqual({
         name: 'test',
         metadata: {
           created: created, // Should be the actual Date object, not a string
-          tags: ['tag1']
-        }
+          tags: ['tag1'],
+        },
       });
     });
 
@@ -248,7 +248,7 @@ describe('ValueObject', () => {
           super({});
         }
       }
-      
+
       const vo = new EmptyValueObject();
       expect(vo.equals(new EmptyValueObject())).toBe(true);
       expect(vo.unwrap()).toEqual({});

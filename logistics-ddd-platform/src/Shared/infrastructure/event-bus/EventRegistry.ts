@@ -1,8 +1,16 @@
-import { DomainEvent } from '../../domain/DomainEvent';
+import { DomainEvent, DomainEventPrimitives } from '@/Shared/domain/DomainEvent';
+import { Uuid } from '@/Shared/domain/Uuid';
+
+// Type for domain event constructor
+type DomainEventConstructor<T extends DomainEvent = DomainEvent> = {
+  new (params: { aggregateId: Uuid; eventId?: Uuid; occurredOn?: Date }, ...args: never[]): T;
+  EVENT_NAME: string;
+  fromPrimitives(primitives: DomainEventPrimitives): T;
+};
 
 export class EventRegistry {
   private static instance: EventRegistry;
-  private events = new Map<string, { eventClass: any; version: string }>();
+  private events = new Map<string, { eventClass: DomainEventConstructor; version: string }>();
 
   static getInstance(): EventRegistry {
     if (!EventRegistry.instance) {
@@ -11,14 +19,11 @@ export class EventRegistry {
     return EventRegistry.instance;
   }
 
-  register<T extends DomainEvent>(
-    eventClass: { new (...args: any[]): T; EVENT_NAME: string; fromPrimitives: Function },
-    version: string = '1.0.0'
-  ): void {
+  register<T extends DomainEvent>(eventClass: DomainEventConstructor<T>, version: string = '1.0.0'): void {
     this.events.set(eventClass.EVENT_NAME, { eventClass, version });
   }
 
-  getEventClass(eventName: string): any {
+  getEventClass(eventName: string): DomainEventConstructor {
     const eventInfo = this.events.get(eventName);
     if (!eventInfo) {
       throw new Error(`Unknown event type: ${eventName}`);

@@ -1,7 +1,7 @@
 import { DomainEventSubscriber } from '@/Shared/domain/DomainEventSubscriber';
-import { PackageRegistered } from '../../domain/events/PackageRegistered';
-import { PackageRepository } from '../../domain/PackageRepository';
-import { PackageId } from '../../domain/PackageId';
+import { PackageRegistered } from '@/Contexts/Logistics/Package/domain/events/PackageRegistered';
+import { PackageRepository } from '@/Contexts/Logistics/Package/domain/PackageRepository';
+import { PackageId } from '@/Contexts/Logistics/Package/domain/PackageId';
 import { ConsumerMetrics } from '@/apps/logistics/consumers/start';
 import { ConsumerErrorHandler } from '@/apps/logistics/consumers/start';
 import { log } from '@/utils/log';
@@ -10,14 +10,16 @@ export class PackageStatusUpdater implements DomainEventSubscriber<PackageRegist
   constructor(
     private readonly repository: PackageRepository,
     private readonly metrics: ConsumerMetrics,
-    private readonly errorHandler: ConsumerErrorHandler
+    private readonly errorHandler: ConsumerErrorHandler,
   ) {}
 
   subscribedTo() {
-    return [{
-      EVENT_NAME: PackageRegistered.EVENT_NAME,
-      fromPrimitives: PackageRegistered.fromPrimitives,
-    }];
+    return [
+      {
+        EVENT_NAME: PackageRegistered.EVENT_NAME,
+        fromPrimitives: PackageRegistered.fromPrimitives,
+      },
+    ];
   }
 
   async on(event: PackageRegistered): Promise<void> {
@@ -39,7 +41,6 @@ export class PackageStatusUpdater implements DomainEventSubscriber<PackageRegist
       this.metrics.recordEventProcessed(PackageRegistered.EVENT_NAME, processingTime);
 
       log.info(`Package ${event.packageId} status updated`);
-
     } catch (error) {
       this.errorHandler.handleError(error as Error, {
         subscriber: 'PackageStatusUpdater',

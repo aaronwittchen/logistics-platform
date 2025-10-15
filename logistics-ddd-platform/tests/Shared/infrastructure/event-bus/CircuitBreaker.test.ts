@@ -23,8 +23,7 @@ describe('CircuitBreaker', () => {
     it('should transition to OPEN state after threshold failures', async () => {
       // Fail 3 times to reach threshold
       for (let i = 0; i < 3; i++) {
-        await expect(circuitBreaker.execute(() => Promise.reject(new Error('fail'))))
-          .rejects.toThrow('fail');
+        await expect(circuitBreaker.execute(() => Promise.reject(new Error('fail')))).rejects.toThrow('fail');
       }
 
       expect(circuitBreaker.getState()).toBe(CircuitState.OPEN);
@@ -40,8 +39,7 @@ describe('CircuitBreaker', () => {
         }
       }
 
-      await expect(circuitBreaker.execute(() => Promise.resolve('success')))
-        .rejects.toThrow('Circuit breaker is OPEN');
+      await expect(circuitBreaker.execute(() => Promise.resolve('success'))).rejects.toThrow('Circuit breaker is OPEN');
     });
   });
 
@@ -83,8 +81,7 @@ describe('CircuitBreaker', () => {
       await new Promise(resolve => setTimeout(resolve, 150));
 
       // First operation in HALF_OPEN state fails
-      await expect(circuitBreaker.execute(() => Promise.reject(new Error('fail'))))
-        .rejects.toThrow('fail');
+      await expect(circuitBreaker.execute(() => Promise.reject(new Error('fail')))).rejects.toThrow('fail');
 
       expect(circuitBreaker.getState()).toBe(CircuitState.OPEN);
     });
@@ -93,7 +90,7 @@ describe('CircuitBreaker', () => {
   describe('custom configuration', () => {
     it('should accept custom failure threshold', async () => {
       const customCB = new CircuitBreaker(5, 1000, 1);
-      
+
       // Should take 5 failures to open
       for (let i = 0; i < 4; i++) {
         try {

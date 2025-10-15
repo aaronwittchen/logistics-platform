@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import type { StockItemRepository } from '../../domain/StockItemRepository';
+import type { StockItemRepository } from '@/Contexts/Inventory/StockItem/domain/StockItemRepository';
 
 /**
  * @swagger
@@ -33,8 +33,8 @@ export class GetStockItemsController {
       const primitives = stockItems.map(item => item.toPrimitives());
 
       res.status(200).json(primitives);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+    } catch (error: unknown) {
+      res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
     }
   }
 }

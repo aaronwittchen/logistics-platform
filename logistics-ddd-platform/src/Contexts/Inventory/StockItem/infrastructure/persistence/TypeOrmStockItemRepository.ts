@@ -1,9 +1,9 @@
 import { DataSource, Repository } from 'typeorm';
-import { StockItem } from '../../domain/StockItem';
-import { StockItemId } from '../../domain/StockItemId';
-import { StockItemName } from '../../domain/StockItemName';
-import { Quantity } from '../../domain/Quantity';
-import { StockItemRepository } from '../../domain/StockItemRepository';
+import { StockItem } from '@/Contexts/Inventory/StockItem/domain/StockItem';
+import { StockItemId } from '@/Contexts/Inventory/StockItem/domain/StockItemId';
+import { StockItemName } from '@/Contexts/Inventory/StockItem/domain/StockItemName';
+import { Quantity } from '@/Contexts/Inventory/StockItem/domain/Quantity';
+import { StockItemRepository } from '@/Contexts/Inventory/StockItem/domain/StockItemRepository';
 import { StockItemEntity } from './StockItemEntity';
 import { EventBus } from '@/Shared/domain/EventBus';
 import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
@@ -14,7 +14,7 @@ export class TypeOrmStockItemRepository implements StockItemRepository {
 
   constructor(
     private readonly eventBus?: EventBus,
-    dataSource?: DataSource
+    dataSource?: DataSource,
   ) {
     // Use the provided DataSource for testing, otherwise use AppDataSource
     const ds = dataSource || AppDataSource;
@@ -58,13 +58,13 @@ export class TypeOrmStockItemRepository implements StockItemRepository {
     return StockItem.add({
       id: new StockItemId(entity.id),
       name: new StockItemName(entity.name),
-      quantity: new Quantity(entity.quantity)
+      quantity: new Quantity(entity.quantity),
     });
   }
 
   async delete(id: StockItemId): Promise<void> {
     const existingEntity = await this.repository.findOne({
-      where: { id: id.value }
+      where: { id: id.value },
     });
 
     if (existingEntity) {
@@ -80,8 +80,8 @@ export class TypeOrmStockItemRepository implements StockItemRepository {
       StockItem.add({
         id: new StockItemId(entity.id),
         name: new StockItemName(entity.name),
-        quantity: new Quantity(entity.quantity)
-      })
+        quantity: new Quantity(entity.quantity),
+      }),
     );
   }
 }

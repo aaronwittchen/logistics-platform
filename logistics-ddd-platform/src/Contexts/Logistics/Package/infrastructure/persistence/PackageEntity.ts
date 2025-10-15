@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { Package } from "../../domain/Package";
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Package } from '@/Contexts/Logistics/Package/domain/Package';
 
 /**
  * TypeORM entity representing the Package table in the database.
@@ -8,23 +8,23 @@ import { Package } from "../../domain/Package";
  * - Define the database schema for packages
  * - Map between database rows and domain aggregates
  */
-@Entity({ name: "packages" })
+@Entity({ name: 'packages' })
 export class PackageEntity {
   /** Primary key (UUID string) */
-  @PrimaryColumn({ type: "varchar", length: 36 })
+  @PrimaryColumn({ type: 'varchar', length: 36 })
   id!: string;
 
   /** Package tracking number (10 character alphanumeric) */
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: 'varchar', length: 10 })
   trackingNumber!: string;
 
   /** Associated stock reservation ID */
-  @Column({ type: "varchar", length: 36 })
+  @Column({ type: 'varchar', length: 36 })
   reservationId!: string;
 
-    /** Package status */
-    @Column({ type: "varchar", length: 20 })
-    status!: "uninitialized" | "registered" | "in_transit" | "delivered";
+  /** Package status */
+  @Column({ type: 'varchar', length: 20 })
+  status!: 'uninitialized' | 'registered' | 'in_transit' | 'delivered';
 
   /**
    * Converts a Package domain aggregate into a TypeORM entity.

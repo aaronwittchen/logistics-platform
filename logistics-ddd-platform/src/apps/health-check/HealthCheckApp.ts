@@ -1,6 +1,6 @@
-import { HttpServer } from '../../Shared/infrastructure/http/HttpServer';
+import { HttpServer } from '@/Shared/infrastructure/http/HttpServer';
 import { Router } from 'express';
-import { AppDataSource } from '../../Shared/infrastructure/persistence/TypeOrmConfig';
+import { AppDataSource } from '@/Shared/infrastructure/persistence/TypeOrmConfig';
 import { log } from '@/utils/log';
 
 export class HealthCheckApp {
@@ -40,7 +40,7 @@ export class HealthCheckApp {
         },
       };
 
-      const isHealthy = Object.values(health.services).every((status) => status === 'ok');
+      const isHealthy = Object.values(health.services).every(status => status === 'ok');
 
       if (isHealthy) {
         health.status = 'ok';
@@ -65,7 +65,7 @@ export class HealthCheckApp {
         },
       };
 
-      const isHealthy = Object.values(health.services).every((service) => service.status === 'ok');
+      const isHealthy = Object.values(health.services).every(service => service.status === 'ok');
 
       if (isHealthy) {
         health.status = 'ok';
@@ -113,7 +113,7 @@ export class HealthCheckApp {
       });
 
       if (response.ok) {
-        const health = await response.json() as { status: string };
+        const health = (await response.json()) as { status: string };
         return health.status !== 'red' ? 'ok' : 'error';
       } else {
         log.err(`ElasticSearch HTTP check failed: ${response.status} ${response.statusText}`);
@@ -139,7 +139,7 @@ export class HealthCheckApp {
       const responseTime = Date.now() - start;
 
       if (response.ok) {
-        const health = await response.json() as { status: string };
+        const health = (await response.json()) as { status: string };
         return { status: health.status !== 'red' ? 'ok' : 'error', responseTime };
       } else {
         return { status: 'error', responseTime, error: `HTTP ${response.status}: ${response.statusText}` };
@@ -150,14 +150,9 @@ export class HealthCheckApp {
   }
 
   private async checkRabbitMQ(): Promise<string> {
-    try {
-      // We'll implement a basic RabbitMQ check
-      // For now, just return 'ok' since we don't have a direct connection here
-      return 'ok';
-    } catch (error) {
-      log.err(`RabbitMQ health check failed: ${error}`);
-      return 'error';
-    }
+    // We'll implement a basic RabbitMQ check
+    // For now, just return 'ok' since we don't have a direct connection here
+    return 'ok';
   }
 
   private async checkRabbitMQDetailed(): Promise<{ status: string; responseTime?: number; error?: string }> {

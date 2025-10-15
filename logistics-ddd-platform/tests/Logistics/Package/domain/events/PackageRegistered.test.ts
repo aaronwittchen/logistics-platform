@@ -1,4 +1,3 @@
-// logistics-ddd-platform/tests/Contexts/Logistics/Package/domain/events/PackageRegistered.test.ts
 import { PackageRegistered } from '@/Contexts/Logistics/Package/domain/events/PackageRegistered';
 import { Uuid } from '@/Shared/domain/Uuid';
 
@@ -9,11 +8,7 @@ describe('PackageRegistered', () => {
       const trackingNumber = 'ABCD123456';
       const reservationId = 'reservation-123';
 
-      const event = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId
-      );
+      const event = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
 
       expect(event).toBeDefined();
       expect(event.aggregateId.value).toBe(id);
@@ -30,13 +25,7 @@ describe('PackageRegistered', () => {
       const customEventId = '660e8400-e29b-41d4-a716-446655440000';
       const customTimestamp = new Date('2023-01-01T12:00:00.000Z');
 
-      const event = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId,
-        customEventId,
-        customTimestamp
-      );
+      const event = new PackageRegistered({ aggregateId: Uuid.from(id), eventId: Uuid.from(customEventId), occurredOn: customTimestamp }, trackingNumber, reservationId);
 
       expect(event.eventId.value).toBe(customEventId);
       expect(event.occurredOn).toBe(customTimestamp);
@@ -51,11 +40,7 @@ describe('PackageRegistered', () => {
       const trackingNumber = 'ABCD123456';
       const reservationId = 'reservation-123';
 
-      const event = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId
-      );
+      const event = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
 
       const payload = (event as any).toPayload();
       expect(payload).toEqual({
@@ -72,13 +57,7 @@ describe('PackageRegistered', () => {
       const eventId = '660e8400-e29b-41d4-a716-446655440000';
       const occurredOn = new Date('2023-01-01T12:00:00.000Z');
 
-      const event = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId,
-        eventId,
-        occurredOn
-      );
+      const event = new PackageRegistered({ aggregateId: Uuid.from(id), eventId: Uuid.from(eventId), occurredOn }, trackingNumber, reservationId);
 
       const primitives = event.toPrimitives();
 
@@ -101,17 +80,9 @@ describe('PackageRegistered', () => {
       const trackingNumber = 'ABCD123456';
       const reservationId = 'reservation-123';
 
-      const event1 = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId
-      );
+      const event1 = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
 
-      const event2 = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId
-      );
+      const event2 = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
 
       expect(event1.equals(event2)).toBe(true);
     });
@@ -120,17 +91,9 @@ describe('PackageRegistered', () => {
       const trackingNumber = 'ABCD123456';
       const reservationId = 'reservation-123';
 
-      const event1 = new PackageRegistered(
-        '550e8400-e29b-41d4-a716-446655440000',
-        trackingNumber,
-        reservationId
-      );
+      const event1 = new PackageRegistered({ aggregateId: Uuid.from('550e8400-e29b-41d4-a716-446655440000') }, trackingNumber, reservationId);
 
-      const event2 = new PackageRegistered(
-        '660e8400-e29b-41d4-a716-446655440000',
-        trackingNumber,
-        reservationId
-      );
+      const event2 = new PackageRegistered({ aggregateId: Uuid.from('660e8400-e29b-41d4-a716-446655440000') }, trackingNumber, reservationId);
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -139,17 +102,9 @@ describe('PackageRegistered', () => {
       const id = '550e8400-e29b-41d4-a716-446655440000';
       const reservationId = 'reservation-123';
 
-      const event1 = new PackageRegistered(
-        id,
-        'ABCD123456',
-        reservationId
-      );
+      const event1 = new PackageRegistered({ aggregateId: Uuid.from(id) }, 'ABCD123456', reservationId);
 
-      const event2 = new PackageRegistered(
-        id,
-        'EFGH567890',
-        reservationId
-      );
+      const event2 = new PackageRegistered({ aggregateId: Uuid.from(id) }, 'EFGH567890', reservationId);
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -158,17 +113,9 @@ describe('PackageRegistered', () => {
       const id = '550e8400-e29b-41d4-a716-446655440000';
       const trackingNumber = 'ABCD123456';
 
-      const event1 = new PackageRegistered(
-        id,
-        trackingNumber,
-        'reservation-123'
-      );
+      const event1 = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, 'reservation-123');
 
-      const event2 = new PackageRegistered(
-        id,
-        trackingNumber,
-        'reservation-456'
-      );
+      const event2 = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, 'reservation-456');
 
       expect(event1.equals(event2)).toBe(false);
     });
@@ -204,11 +151,7 @@ describe('PackageRegistered', () => {
       const trackingNumber = 'ABCD123456';
       const reservationId = 'reservation-123_ABC-xyz.456';
 
-      const event = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId
-      );
+      const event = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
 
       expect(event.fulfilledReservationId).toBe('reservation-123_ABC-xyz.456');
     });
@@ -218,11 +161,7 @@ describe('PackageRegistered', () => {
       const trackingNumber = 'ABCD123456';
       const reservationId = 'reservation-' + 'a'.repeat(100);
 
-      const event = new PackageRegistered(
-        id,
-        trackingNumber,
-        reservationId
-      );
+      const event = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
 
       expect(event.fulfilledReservationId).toBe(reservationId);
     });
@@ -231,19 +170,10 @@ describe('PackageRegistered', () => {
       const id = '550e8400-e29b-41d4-a716-446655440000';
       const reservationId = 'reservation-123';
 
-      const testCases = [
-        'ABCDEFGHIJ',
-        '0123456789',
-        'A1B2C3D4E5',
-        '12345ABCDE',
-      ];
+      const testCases = ['ABCDEFGHIJ', '0123456789', 'A1B2C3D4E5', '12345ABCDE'];
 
       testCases.forEach(trackingNumber => {
-        const event = new PackageRegistered(
-          id,
-          trackingNumber,
-          reservationId
-        );
+        const event = new PackageRegistered({ aggregateId: Uuid.from(id) }, trackingNumber, reservationId);
         expect(event.packageTrackingNumber).toBe(trackingNumber);
       });
     });

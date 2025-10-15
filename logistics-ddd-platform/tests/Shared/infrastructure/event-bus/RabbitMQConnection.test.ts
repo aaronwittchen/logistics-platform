@@ -1,4 +1,4 @@
-import { RabbitMQConnection } from '../../../../src/Shared/infrastructure/event-bus/RabbitMQConnection';
+import { RabbitMQConnection } from '@/../src/Shared/infrastructure/event-bus/RabbitMQConnection';
 import { log } from '@/utils/log';
 
 describe('RabbitMQConnection Integration', () => {

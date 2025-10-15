@@ -1,4 +1,4 @@
-import { Uuid } from "./Uuid";
+import { Uuid } from './Uuid';
 
 /**
  * Shape of a domain event when converted to plain JavaScript objects.
@@ -6,10 +6,10 @@ import { Uuid } from "./Uuid";
  * Used for serialization, persistence, or messaging systems.
  */
 export interface DomainEventPrimitives {
-  aggregateId: string;   // ID of the aggregate that triggered the event
-  eventId: string;       // Unique ID for this event instance
-  occurredOn: string;    // ISO timestamp of when the event occurred
-  eventName: string;     // Name/type of the event
+  aggregateId: string; // ID of the aggregate that triggered the event
+  eventId: string; // Unique ID for this event instance
+  occurredOn: string; // ISO timestamp of when the event occurred
+  eventName: string; // Name/type of the event
   [key: string]: unknown; // Additional payload specific to each event
 }
 
@@ -22,8 +22,8 @@ export interface DomainEventPrimitives {
  */
 export abstract class DomainEvent<TPayload extends object = object> {
   public readonly aggregateId: Uuid; // ID of the aggregate the event relates to
-  public readonly eventId: Uuid;     // Unique identifier for the event instance
-  public readonly occurredOn: Date;  // Timestamp when the event was created
+  public readonly eventId: Uuid; // Unique identifier for the event instance
+  public readonly occurredOn: Date; // Timestamp when the event was created
 
   /**
    * Constructor initializes the event with required and optional properties.
@@ -32,35 +32,31 @@ export abstract class DomainEvent<TPayload extends object = object> {
    * @param params.eventId - optional unique ID for this event (auto-generated if missing)
    * @param params.occurredOn - optional timestamp (defaults to current time)
    */
-  protected constructor(params: {
-    aggregateId: Uuid;
-    eventId?: Uuid;
-    occurredOn?: Date;
-  }) {
+  protected constructor(params: { aggregateId: Uuid; eventId?: Uuid; occurredOn?: Date }) {
     this.aggregateId = params.aggregateId;
-    this.eventId = params.eventId ?? Uuid.random();   // generate new ID if not provided
+    this.eventId = params.eventId ?? Uuid.random(); // generate new ID if not provided
     this.occurredOn = params.occurredOn ?? new Date(); // default to now if not provided
-    
+
     // Make properties truly immutable at runtime
     Object.defineProperty(this, 'aggregateId', {
       value: this.aggregateId,
       writable: false,
       configurable: false,
-      enumerable: true
+      enumerable: true,
     });
-    
+
     Object.defineProperty(this, 'eventId', {
       value: this.eventId,
       writable: false,
       configurable: false,
-      enumerable: true
+      enumerable: true,
     });
-    
+
     Object.defineProperty(this, 'occurredOn', {
       value: this.occurredOn,
       writable: false,
       configurable: false,
-      enumerable: true
+      enumerable: true,
     });
   }
 

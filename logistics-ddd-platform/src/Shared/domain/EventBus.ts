@@ -1,4 +1,5 @@
-import { DomainEvent } from "./DomainEvent";
+import { DomainEvent } from './DomainEvent';
+import { Uuid } from './Uuid';
 
 /**
  * Type representing a constructor of a DomainEvent.
@@ -8,6 +9,8 @@ import { DomainEvent } from "./DomainEvent";
  * @template T - a subclass of DomainEvent
  */
 export type DomainEventClass<T extends DomainEvent = DomainEvent> = new (
+  params: { aggregateId: Uuid; eventId?: Uuid; occurredOn?: Date },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) => T;
 
@@ -18,9 +21,7 @@ export type DomainEventClass<T extends DomainEvent = DomainEvent> = new (
  *
  * @template T - the specific DomainEvent type the handler processes
  */
-export type DomainEventHandler<T extends DomainEvent = DomainEvent> = (
-  event: T
-) => void | Promise<void>;
+export type DomainEventHandler<T extends DomainEvent = DomainEvent> = (event: T) => void | Promise<void>;
 
 /**
  * Interface representing an Event Bus in the system.
@@ -47,10 +48,7 @@ export interface EventBus {
    * @param event - the class of the DomainEvent
    * @param handler - function to call when event is published
    */
-  subscribe<T extends DomainEvent>(
-    event: DomainEventClass<T>,
-    handler: DomainEventHandler<T>
-  ): void;
+  subscribe<T extends DomainEvent>(event: DomainEventClass<T>, handler: DomainEventHandler<T>): void;
 
   /**
    * Unsubscribe a previously registered handler from a specific DomainEvent.
@@ -59,8 +57,5 @@ export interface EventBus {
    * @param event - the class of the DomainEvent
    * @param handler - the handler to remove
    */
-  unsubscribe<T extends DomainEvent>(
-    event: DomainEventClass<T>,
-    handler: DomainEventHandler<T>
-  ): void;
+  unsubscribe<T extends DomainEvent>(event: DomainEventClass<T>, handler: DomainEventHandler<T>): void;
 }

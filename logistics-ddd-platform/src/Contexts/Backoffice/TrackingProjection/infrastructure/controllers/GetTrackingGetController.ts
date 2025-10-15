@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { FindTrackingQueryHandler } from '../../application/Find/FindTrackingQueryHandler';
-import { FindTrackingQuery } from '../../application/Find/FindTrackingQuery';
+import { FindTrackingQueryHandler } from '@/Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
+import { FindTrackingQuery } from '@/Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQuery';
 import { log } from '@/utils/log';
 
 export class GetTrackingGetController {
@@ -25,7 +25,7 @@ export class GetTrackingGetController {
       }
 
       res.status(200).json(tracking);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.err(`Error in GetTrackingGetController: ${error}`);
       res.status(500).json({ error: 'Internal server error' });
     }
