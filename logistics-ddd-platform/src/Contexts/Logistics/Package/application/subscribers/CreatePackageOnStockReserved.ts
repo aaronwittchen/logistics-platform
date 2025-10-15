@@ -5,6 +5,7 @@ import { PackageId } from '@/Contexts/Logistics/Package/domain/PackageId';
 import { TrackingNumber } from '@/Contexts/Logistics/Package/domain/TrackingNumber';
 import { PackageRepository } from '@/Contexts/Logistics/Package/domain/PackageRepository';
 import { log } from '@/utils/log';
+import { PackageRegistered } from '@/Contexts/Logistics/Package/domain/events/PackageRegistered';
 
 export class CreatePackageOnStockReserved implements DomainEventSubscriber<StockItemReserved> {
   constructor(private readonly repository: PackageRepository) {}

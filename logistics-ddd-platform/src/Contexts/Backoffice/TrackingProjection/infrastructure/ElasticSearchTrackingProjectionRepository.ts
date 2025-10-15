@@ -177,4 +177,17 @@ export class ElasticSearchTrackingProjectionRepository implements TrackingProjec
     });
     return result.count;
   }
+
+  async clearAll(): Promise<void> {
+    try {
+      await this.client.getClient().deleteByQuery({
+        index: this.indexName,
+        query: { match_all: {} },
+      });
+      log.ok('Cleared all tracking projections');
+    } catch (error) {
+      // Index might not exist yet
+      log.info('No projections to clear or index does not exist');
+    }
+  }
 }

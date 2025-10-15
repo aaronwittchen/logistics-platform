@@ -4,6 +4,10 @@ import { ElasticSearchClient } from '@/Shared/infrastructure/persistence/Elastic
 import { ElasticSearchTrackingProjectionRepository } from '@/Contexts/Backoffice/TrackingProjection/infrastructure/ElasticSearchTrackingProjectionRepository';
 import { FindTrackingQueryHandler } from '@/Contexts/Backoffice/TrackingProjection/application/Find/FindTrackingQueryHandler';
 import { GetTrackingGetController } from '@/Contexts/Backoffice/TrackingProjection/infrastructure/controllers/GetTrackingGetController';
+import { RebuildProjectionsCommandHandler } from '@/Contexts/Backoffice/TrackingProjection/application/RebuildProjections/RebuildProjectionsCommandHandler';
+import { RebuildProjectionsPostController } from '@/Contexts/Backoffice/TrackingProjection/infrastructure/controllers/RebuildProjectionsPostController';
+import { TypeOrmStockItemRepository } from '@/Contexts/Inventory/StockItem/infrastructure/persistence/TypeOrmStockItemRepository';
+import { TypeOrmPackageRepository } from '@/Contexts/Logistics/Package/infrastructure/persistence/TypeOrmPackageRepository';
 import { Router } from 'express';
 import { log } from '@/utils/log';
 
@@ -68,6 +72,17 @@ export class BackofficeBackendApp {
 
           // Tracking query endpoints
           router.get('/tracking/:id', (req, res) => controller.run(req, res));
+
+          // Add rebuild projections endpoint
+          const stockItemRepo = new TypeOrmStockItemRepository();
+          const packageRepo = new TypeOrmPackageRepository();
+          const rebuildHandler = new RebuildProjectionsCommandHandler(
+            stockItemRepo,
+            packageRepo,
+            repository // This is the tracking repository already created above
+          );
+          const rebuildController = new RebuildProjectionsPostController(rebuildHandler);
+          router.post('/projections/rebuild', (req, res) => rebuildController.run(req, res));
 
           log.ok('Tracking routes registered');
         } else {
