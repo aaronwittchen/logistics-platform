@@ -21,7 +21,26 @@ import { ReserveStockCommand } from '@/Contexts/Inventory/StockItem/application/
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ReserveStockRequest'
+ *             type: object
+ *             required:
+ *               - quantity
+ *               - reservationId
+ *             properties:
+ *               quantity:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 1000000
+ *                 description: Quantity to reserve
+ *               reservationId:
+ *                 type: string
+ *                 description: Unique reservation identifier
+ *               expiresAt:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Optional expiration date for the reservation
+ *               reason:
+ *                 type: string
+ *                 description: Optional business reason for the reservation
  *     responses:
  *       200:
  *         description: Stock reserved successfully
@@ -32,6 +51,18 @@ import { ReserveStockCommand } from '@/Contexts/Inventory/StockItem/application/
  *               properties:
  *                 message:
  *                   type: string
+ *                 reservationDetails:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     quantity:
+ *                       type: number
+ *                     expiresAt:
+ *                       type: string
+ *                       format: date-time
+ *                     reason:
+ *                       type: string
  *       404:
  *         description: Stock item not found
  *         content:
@@ -57,7 +88,7 @@ export class ReserveStockPutController {
   async run(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { quantity, reservationId } = req.body;
+      const { quantity, reservationId, expiresAt, reason } = req.body;
 
       // Validate required fields
       if (!id || quantity === undefined || !reservationId) {
@@ -75,16 +106,62 @@ export class ReserveStockPutController {
         return;
       }
 
-      const command = new ReserveStockCommand(id, quantity, reservationId);
+      // Validate quantity is not too large
+      if (quantity > 1_000_000) {
+        res.status(400).json({
+          error: 'quantity cannot exceed 1,000,000',
+        });
+        return;
+      }
+
+      // Validate optional expiration date if provided
+      let expirationDate: Date | undefined;
+      if (expiresAt) {
+        expirationDate = new Date(expiresAt);
+        if (isNaN(expirationDate.getTime())) {
+          res.status(400).json({
+            error: 'expiresAt must be a valid date',
+          });
+          return;
+        }
+        
+        // Ensure expiration is in the future
+        if (expirationDate <= new Date()) {
+          res.status(400).json({
+            error: 'expiresAt must be a future date',
+          });
+          return;
+        }
+      }
+
+      const command = new ReserveStockCommand(
+        id,
+        quantity,
+        reservationId,
+        expirationDate,
+        reason
+      );
+
       await this.handler.execute(command);
 
-      res.status(200).json({ message: 'Stock reserved successfully' });
+      // Return success response with reservation details
+      res.status(200).json({
+        message: 'Stock reserved successfully',
+        reservationDetails: {
+          id,
+          quantity,
+          ...(expirationDate && { expiresAt: expirationDate.toISOString() }),
+          ...(reason && { reason }),
+        }
+      });
     } catch (error: unknown) {
       // Handle specific business errors
       if (error instanceof Error && error.message === 'Stock item not found') {
         res.status(404).json({ error: error.message });
-      } else if (error instanceof Error && error.message === 'Insufficient stock') {
+      } else if (error instanceof Error && error.message.includes('Insufficient')) {
         res.status(409).json({ error: error.message });
+      } else if (error instanceof Error && error.message.includes('negative')) {
+        res.status(400).json({ error: error.message });
       } else {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
         res.status(400).json({ error: errorMessage });

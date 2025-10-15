@@ -40,8 +40,14 @@ export class ReserveStockCommandHandler {
       throw new Error('Stock item not found');
     }
 
-    // Reserve the specified quantity (this will throw if insufficient stock)
-    stockItem.reserve(quantity, command.reservationId);
+    // Reserve the specified quantity with optional metadata
+    // The StockItem.reserve() method will throw if insufficient stock is available
+    stockItem.reserve(
+      quantity,
+      command.reservationId,
+      command.expiresAt,  // Optional expiration date
+      command.reason      // Optional business reason
+    );
 
     // Persist the updated aggregate
     await this.repository.save(stockItem);

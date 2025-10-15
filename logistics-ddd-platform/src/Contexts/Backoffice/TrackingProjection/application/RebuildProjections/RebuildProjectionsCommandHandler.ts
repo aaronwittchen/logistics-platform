@@ -1,5 +1,7 @@
 import { StockItemRepository } from '@/Contexts/Inventory/StockItem/domain/StockItemRepository';
 import { PackageRepository } from '@/Contexts/Logistics/Package/domain/PackageRepository';
+import { StockItem } from '@/Contexts/Inventory/StockItem/domain/StockItem';
+import { Package } from '@/Contexts/Logistics/Package/domain/Package';
 import { TrackingProjectionRepository } from '../../domain/TrackingProjectionRepository';
 import { TrackingView } from '../../domain/TrackingView';
 import { RebuildProjectionsCommand } from './RebuildProjectionsCommand';
@@ -12,7 +14,7 @@ export class RebuildProjectionsCommandHandler {
     private readonly trackingRepository: TrackingProjectionRepository,
   ) {}
 
-  async execute(command: RebuildProjectionsCommand): Promise<void> {
+  async execute(_command: RebuildProjectionsCommand): Promise<void> {
     log.info('Starting projection rebuild process...');
 
     // 1. Clear existing projections
@@ -33,7 +35,7 @@ export class RebuildProjectionsCommandHandler {
     log.ok(`Projection rebuild completed. Created ${totalProjections} tracking projections`);
   }
 
-  private async rebuildFromStockItems(stockItems: any[]): Promise<void> {
+  private async rebuildFromStockItems(stockItems: StockItem[]): Promise<void> {
     for (const stockItem of stockItems) {
       // Create tracking projection for each stock item
       const tracking: TrackingView = {
@@ -51,16 +53,16 @@ export class RebuildProjectionsCommandHandler {
     }
   }
 
-  private async rebuildFromPackages(packages: any[]): Promise<void> {
+  private async rebuildFromPackages(packages: Package[]): Promise<void> {
     for (const pkg of packages) {
       // Create or update tracking projection for each package
       const tracking: TrackingView = {
-        id: pkg.id.value,
+        id: pkg.getId().value,
         stockItemId: '', // We don't have direct relation in current data model
         stockItemName: 'Package',
         reservedQuantity: 1,
-        reservationId: pkg.reservationId,
-        status: pkg.status || 'registered',
+        reservationId: pkg.getReservationId(),
+        status: pkg.getStatus() === 'uninitialized' ? 'registered' as const : pkg.getStatus() as 'registered' | 'in_transit' | 'delivered',
         createdAt: new Date(),
         updatedAt: new Date(),
       };

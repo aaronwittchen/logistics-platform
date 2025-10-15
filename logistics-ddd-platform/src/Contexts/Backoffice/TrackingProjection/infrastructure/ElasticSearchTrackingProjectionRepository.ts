@@ -185,7 +185,7 @@ export class ElasticSearchTrackingProjectionRepository implements TrackingProjec
         query: { match_all: {} },
       });
       log.ok('Cleared all tracking projections');
-    } catch (error) {
+    } catch {
       // Index might not exist yet
       log.info('No projections to clear or index does not exist');
     }

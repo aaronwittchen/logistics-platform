@@ -16,7 +16,7 @@ describe('StockItem', () => {
 
       expect(stockItem.id).toBe(id);
       expect(stockItem.name).toBe(name);
-      expect(stockItem.quantity).toBe(quantity);
+      expect(stockItem.quantity.value).toBe(quantity.value);
       expect(stockItem.quantity.value).toBe(100);
     });
 
@@ -267,6 +267,10 @@ describe('StockItem', () => {
         id: '550e8400-e29b-41d4-a716-446655440000',
         name: 'iPhone 15 Pro',
         quantity: 100,
+        availableQuantity: 100,
+        reservedQuantity: 0,
+        totalQuantity: 100,
+        version: 2,
       });
     });
 
