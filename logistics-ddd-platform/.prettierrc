@@ -26,12 +26,5 @@
     }
   ],
 
-  "embeddedLanguageFormatting": "auto",
-
-  "importOrder": ["^@/(.*)$", "^[./]"],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true,
-  "importOrderBuiltinModulesToTop": true,
-  "importOrderMergeDuplicateImports": true,
-  "importOrderCombineTypeAndValueImports": true
+  "embeddedLanguageFormatting": "auto"
 }
