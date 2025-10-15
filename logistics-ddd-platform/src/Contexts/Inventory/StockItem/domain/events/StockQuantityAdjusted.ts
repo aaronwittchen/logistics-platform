@@ -171,15 +171,19 @@ export class StockQuantityAdjusted extends DomainEvent<StockQuantityAdjustedPayl
    * Validate that the adjustment is mathematically consistent
    */
   private ensureValidAdjustment(): void {
-    const expectedNewQuantity = this.adjustmentTypeValue === 'ADDITION'
-      ? Quantity.from(this.originalQuantityValue.value + this.adjustmentQuantityValue.value)
-      : Quantity.from(this.originalQuantityValue.value - this.adjustmentQuantityValue.value);
+    const expectedNewQuantity =
+      this.adjustmentTypeValue === 'ADDITION'
+        ? Quantity.from(this.originalQuantityValue.value + this.adjustmentQuantityValue.value)
+        : Quantity.from(this.originalQuantityValue.value - this.adjustmentQuantityValue.value);
 
     if (!expectedNewQuantity.equals(this.newQuantityValue)) {
       throw new Error('Adjustment quantities are not mathematically consistent');
     }
 
-    if (this.adjustmentTypeValue === 'REDUCTION' && this.adjustmentQuantityValue.value > this.originalQuantityValue.value) {
+    if (
+      this.adjustmentTypeValue === 'REDUCTION' &&
+      this.adjustmentQuantityValue.value > this.originalQuantityValue.value
+    ) {
       throw new Error('Cannot reduce quantity below zero');
     }
   }

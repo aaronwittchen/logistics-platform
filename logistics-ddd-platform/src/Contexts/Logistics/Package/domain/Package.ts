@@ -165,11 +165,7 @@ export class Package extends AggregateRoot {
     pkg.setStatus('registered');
 
     // Record a domain event for the package registration
-    pkg.record(new PackageRegistered(
-      { aggregateId: id },
-      trackingNumber.value,
-      reservationId
-    ));
+    pkg.record(new PackageRegistered({ aggregateId: id }, trackingNumber.value, reservationId));
 
     return pkg;
   }

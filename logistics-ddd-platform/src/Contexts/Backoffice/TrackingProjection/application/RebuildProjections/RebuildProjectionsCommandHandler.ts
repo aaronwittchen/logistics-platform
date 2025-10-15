@@ -62,7 +62,10 @@ export class RebuildProjectionsCommandHandler {
         stockItemName: 'Package',
         reservedQuantity: 1,
         reservationId: pkg.getReservationId(),
-        status: pkg.getStatus() === 'uninitialized' ? 'registered' as const : pkg.getStatus() as 'registered' | 'in_transit' | 'delivered',
+        status:
+          pkg.getStatus() === 'uninitialized'
+            ? ('registered' as const)
+            : (pkg.getStatus() as 'registered' | 'in_transit' | 'delivered'),
         createdAt: new Date(),
         updatedAt: new Date(),
       };

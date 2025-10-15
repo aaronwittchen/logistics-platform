@@ -8,7 +8,7 @@ export interface TrackingProjectionRepository {
   delete(id: string): Promise<void>;
   findByStatus(status: TrackingView['status']): Promise<TrackingView[]>;
   findByReservationId(reservationId: string): Promise<TrackingView | null>;
-  
+
   // Add these new methods for projection rebuilding
   clearAll(): Promise<void>;
   findAll(): Promise<TrackingView[]>;

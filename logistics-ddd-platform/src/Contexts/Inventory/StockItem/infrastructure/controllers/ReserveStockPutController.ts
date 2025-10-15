@@ -124,7 +124,7 @@ export class ReserveStockPutController {
           });
           return;
         }
-        
+
         // Ensure expiration is in the future
         if (expirationDate <= new Date()) {
           res.status(400).json({
@@ -134,13 +134,7 @@ export class ReserveStockPutController {
         }
       }
 
-      const command = new ReserveStockCommand(
-        id,
-        quantity,
-        reservationId,
-        expirationDate,
-        reason
-      );
+      const command = new ReserveStockCommand(id, quantity, reservationId, expirationDate, reason);
 
       await this.handler.execute(command);
 
@@ -152,7 +146,7 @@ export class ReserveStockPutController {
           quantity,
           ...(expirationDate && { expiresAt: expirationDate.toISOString() }),
           ...(reason && { reason }),
-        }
+        },
       });
     } catch (error: unknown) {
       // Handle specific business errors

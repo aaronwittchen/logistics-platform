@@ -12,7 +12,7 @@ export class RebuildProjectionsPostController {
 
       // Parse date if provided
       const date = fromDate ? new Date(fromDate) : undefined;
-      
+
       if (fromDate && date && isNaN(date.getTime())) {
         res.status(400).json({
           error: 'Invalid date format. Use ISO 8601 format (e.g., 2024-01-15T10:30:00Z)',

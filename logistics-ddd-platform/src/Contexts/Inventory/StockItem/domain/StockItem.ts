@@ -8,7 +8,6 @@ import { StockItemReserved } from './events/StockItemReserved';
 import { StockItemReservationReleased } from './events/StockItemReservationReleased';
 import { StockQuantityAdjusted } from './events/StockQuantityAdjusted';
 
-
 /**
  * Interface representing the primitive (serializable) shape of a StockItem.
  */
@@ -77,11 +76,7 @@ export class StockItem extends AggregateRoot {
   /**
    * Factory method to create a new StockItem and record the "StockItemAdded" domain event.
    */
-  static add(params: { 
-    id: StockItemId; 
-    name: StockItemName; 
-    quantity: Quantity 
-  }): StockItem {
+  static add(params: { id: StockItemId; name: StockItemName; quantity: Quantity }): StockItem {
     if (params.quantity.value < 0) {
       throw new Error('Initial stock quantity cannot be negative');
     }
@@ -99,9 +94,9 @@ export class StockItem extends AggregateRoot {
       StockItemId.from(primitives.id),
       StockItemName.from(primitives.name),
       Quantity.from(primitives.totalQuantity),
-      Quantity.from(primitives.reservedQuantity || 0)
+      Quantity.from(primitives.reservedQuantity || 0),
     );
-    
+
     item._version = primitives.version || 1;
     return item;
   }
@@ -115,12 +110,7 @@ export class StockItem extends AggregateRoot {
    * @param reason - optional reason for the reservation
    * @throws Error if insufficient available stock
    */
-  reserve(
-    quantity: Quantity, 
-    reservationId: string, 
-    expiresAt?: Date, 
-    reason?: string
-  ): void {
+  reserve(quantity: Quantity, reservationId: string, expiresAt?: Date, reason?: string): void {
     if (this.isReservationExpired(reservationId)) {
       this.releaseReservation(reservationId);
     }
@@ -153,12 +143,7 @@ export class StockItem extends AggregateRoot {
     });
 
     this.ensureInvariants();
-    this.record(new StockItemReserved(
-      { aggregateId: this._id }, 
-      this._id, 
-      quantity, 
-      reservationId
-    ));
+    this.record(new StockItemReserved({ aggregateId: this._id }, this._id, quantity, reservationId));
   }
 
   /**
@@ -177,12 +162,9 @@ export class StockItem extends AggregateRoot {
     this._reservations.delete(reservationId);
 
     this.ensureInvariants();
-    this.record(new StockItemReservationReleased(
-      { aggregateId: this._id },
-      this._id,
-      reservation.quantity,
-      reservationId
-    ));
+    this.record(
+      new StockItemReservationReleased({ aggregateId: this._id }, this._id, reservation.quantity, reservationId),
+    );
   }
 
   /**
@@ -201,15 +183,17 @@ export class StockItem extends AggregateRoot {
     this._totalQuantity = Quantity.from(this._totalQuantity.value + quantity.value);
 
     this.ensureInvariants();
-    this.record(new StockQuantityAdjusted(
-      { aggregateId: this._id },
-      this._id,
-      originalQuantity,
-      this._totalQuantity,
-      quantity,
-      'ADDITION',
-      reason
-    ));
+    this.record(
+      new StockQuantityAdjusted(
+        { aggregateId: this._id },
+        this._id,
+        originalQuantity,
+        this._totalQuantity,
+        quantity,
+        'ADDITION',
+        reason,
+      ),
+    );
   }
 
   /**
@@ -221,7 +205,7 @@ export class StockItem extends AggregateRoot {
    */
   adjustStock(quantity: Quantity, reason?: string): void {
     const newTotalQuantity = Quantity.from(this._totalQuantity.value + quantity.value);
-    
+
     if (newTotalQuantity.value < 0) {
       throw new Error('Stock adjustment would result in negative quantity');
     }
@@ -235,15 +219,17 @@ export class StockItem extends AggregateRoot {
     this._totalQuantity = newTotalQuantity;
 
     this.ensureInvariants();
-    this.record(new StockQuantityAdjusted(
-      { aggregateId: this._id },
-      this._id,
-      originalQuantity,
-      this._totalQuantity,
-      quantity,
-      quantity.value > 0 ? 'ADDITION' : 'REDUCTION',
-      reason
-    ));
+    this.record(
+      new StockQuantityAdjusted(
+        { aggregateId: this._id },
+        this._id,
+        originalQuantity,
+        this._totalQuantity,
+        quantity,
+        quantity.value > 0 ? 'ADDITION' : 'REDUCTION',
+        reason,
+      ),
+    );
   }
 
   /**
@@ -341,15 +327,15 @@ export class StockItem extends AggregateRoot {
     if (this._totalQuantity.value < 0) {
       throw new Error('Total quantity cannot be negative');
     }
-    
+
     if (this._reservedQuantity.value < 0) {
       throw new Error('Reserved quantity cannot be negative');
     }
-    
+
     if (this._reservedQuantity.value > this._totalQuantity.value) {
       throw new Error('Reserved quantity cannot exceed total quantity');
     }
-    
+
     if (this._reservations.size === 0 && this._reservedQuantity.value > 0) {
       throw new Error('Reserved quantity exists without corresponding reservations');
     }
@@ -391,11 +377,11 @@ export class StockItem extends AggregateRoot {
  */
 export class ReserveStockCommand {
   constructor(
-    public readonly id: string,                    // Stock item ID to reserve from
-    public readonly quantity: number,             // Quantity to reserve
-    public readonly reservationId: string,       // Unique reservation identifier
-    public readonly expiresAt?: Date,            // Optional expiration date for the reservation
-    public readonly reason?: string,             // Optional business reason for the reservation
+    public readonly id: string, // Stock item ID to reserve from
+    public readonly quantity: number, // Quantity to reserve
+    public readonly reservationId: string, // Unique reservation identifier
+    public readonly expiresAt?: Date, // Optional expiration date for the reservation
+    public readonly reason?: string, // Optional business reason for the reservation
   ) {}
 
   /**
@@ -411,26 +397,20 @@ export class ReserveStockCommand {
     if (!params.id || params.id.trim() === '') {
       throw new Error('Stock item ID is required');
     }
-    
+
     if (!params.reservationId || params.reservationId.trim() === '') {
       throw new Error('Reservation ID is required');
     }
-    
+
     if (params.quantity <= 0) {
       throw new Error('Reservation quantity must be greater than zero');
     }
-    
+
     if (params.quantity > 1_000_000) {
       throw new Error('Reservation quantity cannot exceed 1,000,000');
     }
 
-    return new ReserveStockCommand(
-      params.id,
-      params.quantity,
-      params.reservationId,
-      params.expiresAt,
-      params.reason
-    );
+    return new ReserveStockCommand(params.id, params.quantity, params.reservationId, params.expiresAt, params.reason);
   }
 
   /**

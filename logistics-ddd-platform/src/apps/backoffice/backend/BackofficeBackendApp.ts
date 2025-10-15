@@ -79,7 +79,7 @@ export class BackofficeBackendApp {
           const rebuildHandler = new RebuildProjectionsCommandHandler(
             stockItemRepo,
             packageRepo,
-            repository // This is the tracking repository already created above
+            repository, // This is the tracking repository already created above
           );
           const rebuildController = new RebuildProjectionsPostController(rebuildHandler);
           router.post('/projections/rebuild', (req, res) => rebuildController.run(req, res));

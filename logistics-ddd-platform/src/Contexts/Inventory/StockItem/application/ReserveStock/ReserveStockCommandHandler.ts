@@ -45,8 +45,8 @@ export class ReserveStockCommandHandler {
     stockItem.reserve(
       quantity,
       command.reservationId,
-      command.expiresAt,  // Optional expiration date
-      command.reason      // Optional business reason
+      command.expiresAt, // Optional expiration date
+      command.reason, // Optional business reason
     );
 
     // Persist the updated aggregate

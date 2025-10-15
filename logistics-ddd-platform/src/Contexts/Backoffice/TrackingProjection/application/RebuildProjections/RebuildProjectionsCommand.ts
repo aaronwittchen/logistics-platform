@@ -1,3 +1,3 @@
 export class RebuildProjectionsCommand {
-    constructor(public readonly fromDate?: Date) {}
-  }
+  constructor(public readonly fromDate?: Date) {}
+}
