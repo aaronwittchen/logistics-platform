@@ -56,7 +56,7 @@ This project demonstrates enterprise-level architecture patterns used by compani
 - Node.js 20+
 - Docker & Docker Compose
 - Git
-- Bun (optional)
+- Bun
 
 ### Installation
 
@@ -66,23 +66,23 @@ git clone https://github.com/aaronwittchen/logistics-ddd-platform.git
 cd logistics-ddd-platform
 
 # Install dependencies
-npm install
+bun install
 
 # Start infrastructure
 docker-compose -f infra/docker-compose.yml up -d
 
 # Run migrations
-npm run migrate
+bun run migrate
 
 # Start development server
-npm run dev
+bun run dev
 # API available at http://localhost:3000
 
 # In separate terminal, start event consumer
-npm run consumer:inventory
+bun run consumer:inventory
 
 # Run tests
-npm test
+bun test
 ```
 
 ### First API Requests
@@ -238,16 +238,16 @@ Production-ready deployment with container orchestration. Create multi-stage Doc
 
 ```bash
 # Run all tests
-npm test
+bun test
 
 # Watch mode
-npm run test:watch
+bun run test:watch
 
 # With coverage
-npm run test:coverage
+bun run test:coverage
 
 # Specific file
-npm test -- StockItem.spec.ts
+bun test -- StockItem.spec.ts
 ```
 
 Test Structure:
@@ -313,9 +313,9 @@ PORT=3000
 1. Create feature branch: `git checkout -b feature/my-feature`
 2. Write failing tests first
 3. Implement the feature
-4. Run tests: `npm test`
-5. Lint: `npm run lint`
-6. Format: `npm run format`
+4. Run tests: `bun test`
+5. Lint: `bun run lint`
+6. Format: `bun run format`
 7. Submit pull request
 
 ### Reporting Issues
@@ -333,24 +333,20 @@ Use GitHub Issues with:
 
 - "Domain-Driven Design" by Eric Evans (foundational)
 - "Implementing Domain-Driven Design" by Vaughn Vernon (practical)
-- CodelyTV Pro (modern TypeScript examples)
 
 ### CQRS & Event Sourcing
 
-- Microsoft CQRS Journey (free comprehensive guide)
-- Greg Young's talks on CQRS and event sourcing
-- EventStore blog (practical patterns)
+- Microsoft CQRS Journey
+- Transcript of Greg Young's Talk at Code on the Beach 2014: CQRS and Event Sourcing
 
 ### Event-Driven Architecture
 
 - "Building Event-Driven Microservices" by Adam Bellemare
-- Martin Fowler's "The Many Meanings of Event-Driven Architecture"
 - Enterprise Integration Patterns guide
 
 ### Kubernetes
 
 - "Kubernetes Up & Running" by Kelsey Hightower
-- "Kubernetes in Action" by Marko Lukša
 - Official Kubernetes documentation
 
 ---
@@ -368,18 +364,5 @@ Use GitHub Issues with:
 ## License
 
 MIT License - Free to use for learning and portfolio projects.
-
-### Acknowledgments
-
-Inspired by:
-- Eric Evans (Domain-Driven Design)
-- Vaughn Vernon (DDD implementation)
-- Martin Fowler (software architecture)
-- Greg Young (CQRS and event sourcing)
-- CodelyTV (DDD and Hexagonal Architecture examples)
-
----
-
-Built with care for the software architecture community.
 
 [Star on GitHub](https://github.com/aaronwittchen/logistics-ddd-platform) | [Read the Docs](./docs) | [Report Issues](https://github.com/aaronwittchen/logistics-ddd-platform/issues)
