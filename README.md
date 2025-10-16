@@ -360,7 +360,7 @@ Use GitHub Issues with:
 | Pipeline | Status |
 |----------|--------|
 | Unit Tests | [![Unit Tests](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
-| Integration Tests | [![Integration Tests](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/integration-test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
+| Integration Tests | [![Integration Tests](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
 | Code Coverage | [![codecov](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform) |
 
 ---
