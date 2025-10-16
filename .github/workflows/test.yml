@@ -143,7 +143,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           working-directory: logistics-ddd-platform
-          files: ./coverage/coverage-final.json
+          files: ./coverage/coverage.json  # Bun's format
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
