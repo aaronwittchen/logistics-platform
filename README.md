@@ -10,8 +10,8 @@ A production-grade Domain-Driven Design (DDD) logistics and inventory tracking s
 [![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![Jest](https://img.shields.io/badge/Jest-323330?style=flat&logo=jest&logoColor=white)](https://jestjs.io/)
-[![GitHub Actions](https://github.com/aaronwittchen/logistics-ddd-platform/workflows/CI%20-%20Tests%20%26%20Code%20Quality/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions)
-[![codecov](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform)
+[![GitHub Actions](https://github.com/aaronwittchen/logistics-platform/workflows/CI%20-%20Tests%20%26%20Code%20Quality/badge.svg)](https://github.com/aaronwittchen/logistics-platform/actions)
+[![codecov](https://codecov.io/gh/aaronwittchen/logistics-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-platform)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -62,8 +62,8 @@ This project demonstrates enterprise-level architecture patterns used by compani
 
 ```bash
 # Clone the repository
-git clone https://github.com/aaronwittchen/logistics-ddd-platform.git
-cd logistics-ddd-platform
+git clone https://github.com/aaronwittchen/logistics-platform.git
+cd logistics-platform
 
 # Install dependencies
 bun install
@@ -355,9 +355,9 @@ Use GitHub Issues with:
 
 | Pipeline | Status |
 |----------|--------|
-| Unit Tests | [![Unit Tests](https://github.com/aaronwittchen/logistics-ddd-platform/workflows/CI%20-%20Tests%20%26%20Code%20Quality/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
-| Integration Tests | [![Integration Tests](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
-| Code Coverage | [![codecov](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform) |
+| Unit Tests | [![Unit Tests](https://github.com/aaronwittchen/logistics-platform/workflows/CI%20-%20Tests%20%26%20Code%20Quality/badge.svg)](https://github.com/aaronwittchen/logistics-platform/actions) |
+| Integration Tests | [![Integration Tests](https://github.com/aaronwittchen/logistics-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-platform/actions) |
+| Code Coverage | [![codecov](https://codecov.io/gh/aaronwittchen/logistics-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-platform) |
 
 ---
 
@@ -365,4 +365,4 @@ Use GitHub Issues with:
 
 MIT License - Free to use for learning and portfolio projects.
 
-[Star on GitHub](https://github.com/aaronwittchen/logistics-ddd-platform) | [Read the Docs](./docs) | [Report Issues](https://github.com/aaronwittchen/logistics-ddd-platform/issues)
+[Star on GitHub](https://github.com/aaronwittchen/logistics-platform) | [Read the Docs](./docs) | [Report Issues](https://github.com/aaronwittchen/logistics-platform/issues)
