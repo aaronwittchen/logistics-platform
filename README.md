@@ -10,7 +10,7 @@ A production-grade Domain-Driven Design (DDD) logistics and inventory tracking s
 [![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![Jest](https://img.shields.io/badge/Jest-323330?style=flat&logo=jest&logoColor=white)](https://jestjs.io/)
-[![GitHub Actions](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions)
+[![GitHub Actions](https://github.com/aaronwittchen/logistics-ddd-platform/workflows/CI%20-%20Tests%20%26%20Code%20Quality/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions)
 [![codecov](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -359,7 +359,7 @@ Use GitHub Issues with:
 
 | Pipeline | Status |
 |----------|--------|
-| Unit Tests | [![Unit Tests](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
+| Unit Tests | [![Unit Tests](https://github.com/aaronwittchen/logistics-ddd-platform/workflows/CI%20-%20Tests%20%26%20Code%20Quality/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
 | Integration Tests | [![Integration Tests](https://github.com/aaronwittchen/logistics-ddd-platform/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/logistics-ddd-platform/actions) |
 | Code Coverage | [![codecov](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/logistics-ddd-platform) |
 
