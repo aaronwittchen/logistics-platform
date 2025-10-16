@@ -16,6 +16,11 @@ A production-grade Domain-Driven Design (DDD) logistics and inventory tracking s
 
 ---
 
+> [!IMPORTANT]
+> Active development in progress!
+
+---
+
 ## Table of Contents
 
 - [Overview](#overview)
